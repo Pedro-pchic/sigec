@@ -19,6 +19,13 @@
                 @can('manage-employees')
                     <a href="{{ route('empleados.index') }}" class="rounded-md px-3 py-2 hover:bg-slate-100">Empleados</a>
                 @endcan
+                @can('manage-catalog')
+                    <div class="flex items-center gap-1 rounded-md border border-slate-200 p-1">
+                        <span class="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Catálogo</span>
+                        <a href="{{ route('categorias.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Categorías</a>
+                        <a href="{{ route('productos.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Productos</a>
+                    </div>
+                @endcan
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="rounded-md bg-slate-900 px-3 py-2 text-white hover:bg-slate-700">Cerrar sesión</button>
