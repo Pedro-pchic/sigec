@@ -18,7 +18,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        Gate::define('manage-users', fn (User $user): bool => $user->role?->name === Role::ADMINISTRATOR);
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Gate::define('manage-users', fn (User $user): bool =>
+            $user->role?->name === Role::ADMINISTRATOR
+        );
+
         Gate::define('manage-employees', fn (User $user): bool => in_array(
             $user->role?->name,
             [Role::ADMINISTRATOR, Role::HUMAN_RESOURCES],
@@ -29,15 +40,8 @@ class AppServiceProvider extends ServiceProvider
             $email = $request->input('email');
             $email = is_string($email) ? Str::lower($email) : '';
 
-            return Limit::perMinute(5)->by(Str::transliterate($email.'|'.$request->ip()));
+            return Limit::perMinute(5)
+                ->by(Str::transliterate($email.'|'.$request->ip()));
         });
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        //
     }
 }
