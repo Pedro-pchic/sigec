@@ -25,6 +25,20 @@
                         <a href="{{ route('categorias.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Categorías</a>
                         <a href="{{ route('productos.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Productos</a>
                     </div>
+                    <div class="flex items-center gap-1 rounded-md border border-slate-200 p-1">
+                        <span class="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Inventario</span>
+                        <a href="{{ route('inventario.existencias') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Existencias</a>
+                        <a href="{{ route('inventario.movimientos.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Movimientos</a>
+                    </div>
+                @endcan
+                @can('view-purchases')
+                    <div class="flex items-center gap-1 rounded-md border border-slate-200 p-1">
+                        <span class="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Compras</span>
+                        @can('manage-purchases')
+                            <a href="{{ route('proveedores.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Proveedores</a>
+                        @endcan
+                        <a href="{{ route('compras.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Órdenes</a>
+                    </div>
                 @endcan
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
