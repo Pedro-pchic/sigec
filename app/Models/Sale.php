@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['order_id', 'customer_id', 'number', 'sale_date', 'total', 'status', 'notes'])]
 class Sale extends Model
@@ -38,5 +39,10 @@ class Sale extends Model
     public function details(): HasMany
     {
         return $this->hasMany(SaleDetail::class);
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
     }
 }

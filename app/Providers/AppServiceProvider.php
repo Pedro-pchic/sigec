@@ -61,6 +61,24 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('receive-purchases', fn (User $user): bool => $user->can('view-purchases'));
 
+        Gate::define('manage-finances', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::FINANCE],
+            true,
+        ));
+
+        Gate::define('view-invoices', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::SALES, Role::FINANCE],
+            true,
+        ));
+
+        Gate::define('issue-invoices', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::SALES],
+            true,
+        ));
+
         RateLimiter::for('login', function (Request $request): Limit {
             $email = $request->input('email');
             $email = is_string($email) ? Str::lower($email) : '';

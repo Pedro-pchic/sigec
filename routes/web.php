@@ -3,11 +3,14 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
@@ -28,6 +31,34 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::middleware('can:view-invoices')->group(function () {
+        Route::get('/facturas', [InvoiceController::class, 'index'])->name('facturas.index');
+        Route::get('/facturas/{invoice}', [InvoiceController::class, 'show'])->name('facturas.show');
+        Route::get('/facturas/{invoice}/imprimir', [InvoiceController::class, 'document'])->name('facturas.print');
+    });
+
+    Route::post('/ventas/{sale}/factura', [InvoiceController::class, 'store'])
+        ->middleware('can:issue-invoices')
+        ->name('ventas.factura.store');
+
+    Route::middleware('can:manage-finances')->group(function () {
+        Route::post('/facturas/{invoice}/cancelar', [InvoiceController::class, 'cancel'])->name('facturas.cancel');
+
+        Route::get('/pagos', [PaymentController::class, 'index'])->name('pagos.index');
+        Route::get('/pagos/{payment}', [PaymentController::class, 'show'])->name('pagos.show');
+        Route::get('/pagos/{payment}/recibo', [PaymentController::class, 'receipt'])->name('pagos.receipt');
+        Route::post('/facturas/{invoice}/pagos', [PaymentController::class, 'store'])->name('facturas.pagos.store');
+
+        Route::get('/notas-credito', [CreditNoteController::class, 'index'])->name('notas-credito.index');
+        Route::get('/notas-credito/{creditNote}', [CreditNoteController::class, 'show'])->name('notas-credito.show');
+        Route::get('/notas-credito/{creditNote}/imprimir', [CreditNoteController::class, 'document'])
+            ->name('notas-credito.print');
+        Route::post('/notas-credito/{creditNote}/cancelar', [CreditNoteController::class, 'cancel'])
+            ->name('notas-credito.cancel');
+        Route::post('/facturas/{invoice}/notas-credito', [CreditNoteController::class, 'store'])
+            ->name('facturas.notas-credito.store');
+    });
 
     Route::middleware('can:manage-users')->group(function () {
         Route::resource('usuarios', UserController::class)

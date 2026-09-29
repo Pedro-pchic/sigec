@@ -4,6 +4,17 @@
 @section('heading', $sale->number)
 @section('subheading', 'Venta para '.$sale->customer->name)
 
+@section('actions')
+    @if ($sale->invoice)
+        <a href="{{ route('facturas.show', $sale->invoice) }}" class="rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">Ver factura {{ $sale->invoice->number }}</a>
+    @elseif ($sale->status->value === 'confirmed')
+        <form method="POST" action="{{ route('ventas.factura.store', $sale) }}">
+            @csrf
+            <button type="submit" class="rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">Emitir factura</button>
+        </form>
+    @endif
+@endsection
+
 @section('content')
     <section class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <dl class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

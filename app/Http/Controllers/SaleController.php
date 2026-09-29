@@ -20,7 +20,7 @@ class SaleController extends Controller
 
     public function show(Sale $sale): View
     {
-        $sale->load(['customer', 'order', 'details.product']);
+        $sale->load(['customer', 'order', 'details.product', 'invoice']);
 
         return view('sales.show', compact('sale'));
     }

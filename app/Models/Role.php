@@ -21,13 +21,15 @@ class Role extends Model
 
     public const string WAREHOUSE = 'Bodega';
 
+    public const string FINANCE = 'Finanzas';
+
     public const array INITIAL_ROLES = [
         self::ADMINISTRATOR,
         'Gerente',
         self::SALES,
         self::WAREHOUSE,
         self::PURCHASING,
-        'Finanzas',
+        self::FINANCE,
         self::HUMAN_RESOURCES,
     ];
 
