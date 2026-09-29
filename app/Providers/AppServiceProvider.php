@@ -86,5 +86,7 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)
                 ->by(Str::transliterate($email.'|'.$request->ip()));
         });
+
+        RateLimiter::for('checkout', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
     }
 }

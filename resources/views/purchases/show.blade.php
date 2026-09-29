@@ -7,10 +7,10 @@
 @section('actions')
     @can('manage-purchases')
         @if ($purchase->status === \App\Enums\PurchaseStatus::Draft)
-            <a href="{{ route('compras.edit', $purchase) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50">Editar borrador</a>
+            <a href="{{ route('compras.edit', $purchase) }}" class="rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold hover:bg-stone-50">Editar borrador</a>
             <form method="POST" action="{{ route('compras.submit', $purchase) }}">
                 @csrf
-                <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Enviar a pendiente</button>
+                <button type="submit" class="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600">Enviar a pendiente</button>
             </form>
         @endif
         @if (in_array($purchase->status, [\App\Enums\PurchaseStatus::Draft, \App\Enums\PurchaseStatus::Pending], true))
@@ -31,43 +31,43 @@
 @endsection
 
 @section('content')
-    <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
         <dl class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-                <dt class="text-sm font-medium text-slate-500">Proveedor</dt>
+                <dt class="text-sm font-medium text-stone-500">Proveedor</dt>
                 <dd class="mt-1 font-semibold">
                     @can('manage-purchases')
-                        <a href="{{ route('proveedores.show', $purchase->supplier) }}" class="text-indigo-700 hover:underline">{{ $purchase->supplier->name }}</a>
+                        <a href="{{ route('proveedores.show', $purchase->supplier) }}" class="text-brand-700 hover:underline">{{ $purchase->supplier->name }}</a>
                     @else
                         {{ $purchase->supplier->name }}
                     @endcan
                 </dd>
             </div>
             <div>
-                <dt class="text-sm font-medium text-slate-500">Fecha de orden</dt>
+                <dt class="text-sm font-medium text-stone-500">Fecha de orden</dt>
                 <dd class="mt-1">{{ $purchase->order_date->format('d/m/Y') }}</dd>
             </div>
             <div>
-                <dt class="text-sm font-medium text-slate-500">Estado</dt>
+                <dt class="text-sm font-medium text-stone-500">Estado</dt>
                 <dd class="mt-1 font-semibold">{{ $purchase->status->label() }}</dd>
             </div>
             <div>
-                <dt class="text-sm font-medium text-slate-500">Recibida</dt>
+                <dt class="text-sm font-medium text-stone-500">Recibida</dt>
                 <dd class="mt-1">{{ $purchase->received_at?->format('d/m/Y H:i') ?? 'Pendiente' }}</dd>
             </div>
             @if ($purchase->notes)
                 <div class="sm:col-span-2 lg:col-span-4">
-                    <dt class="text-sm font-medium text-slate-500">Notas</dt>
+                    <dt class="text-sm font-medium text-stone-500">Notas</dt>
                     <dd class="mt-1 whitespace-pre-line">{{ $purchase->notes }}</dd>
                 </div>
             @endif
         </dl>
     </div>
 
-    <div class="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+    <div class="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-stone-200">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+            <table class="min-w-full divide-y divide-stone-200 text-sm">
+                <thead class="bg-stone-50 text-left text-xs font-semibold uppercase tracking-wide text-stone-600">
                     <tr>
                         <th class="px-4 py-3">Producto</th>
                         <th class="px-4 py-3 text-right">Cantidad</th>
@@ -75,12 +75,12 @@
                         <th class="px-4 py-3 text-right">Subtotal</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-stone-100">
                     @foreach ($purchase->details as $detail)
                         <tr>
                             <td class="px-4 py-3">
                                 <span class="font-medium">{{ $detail->product->name }}</span>
-                                <span class="mt-0.5 block font-mono text-xs text-slate-500">{{ $detail->product->sku }}</span>
+                                <span class="mt-0.5 block font-mono text-xs text-stone-500">{{ $detail->product->sku }}</span>
                             </td>
                             <td class="px-4 py-3 text-right tabular-nums">{{ number_format($detail->quantity) }}</td>
                             <td class="px-4 py-3 text-right tabular-nums">{{ number_format((float) $detail->unit_cost, 2) }}</td>
@@ -88,7 +88,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-                <tfoot class="bg-slate-50">
+                <tfoot class="bg-stone-50">
                     <tr>
                         <th colspan="3" class="px-4 py-3 text-right text-sm font-semibold">Total</th>
                         <td class="px-4 py-3 text-right text-base font-bold tabular-nums">{{ number_format((float) $purchase->total, 2) }}</td>
@@ -99,6 +99,6 @@
     </div>
 
     <div>
-        <a href="{{ route('compras.index') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50">Volver a órdenes</a>
+        <a href="{{ route('compras.index') }}" class="rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold hover:bg-stone-50">Volver a órdenes</a>
     </div>
 @endsection

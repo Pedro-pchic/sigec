@@ -2,11 +2,17 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
@@ -20,6 +26,23 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
+
+Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalogo.index');
+Route::get('/catalogo/{product}', [CatalogController::class, 'show'])->name('catalogo.show');
+
+Route::get('/carrito', [CartController::class, 'index'])->name('carrito.index');
+Route::post('/carrito/{product}', [CartController::class, 'store'])->name('carrito.store');
+Route::patch('/carrito/{product}', [CartController::class, 'update'])->name('carrito.update');
+Route::delete('/carrito/{product}', [CartController::class, 'destroy'])->name('carrito.destroy');
+Route::delete('/carrito', [CartController::class, 'clear'])->name('carrito.clear');
+
+Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout', [CheckoutController::class, 'store'])
+    ->middleware('throttle:checkout')
+    ->name('checkout.store');
+Route::get('/pedido/{order}/confirmacion', [CheckoutController::class, 'show'])
+    ->middleware('signed')
+    ->name('checkout.confirmation');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -43,6 +66,14 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('ventas.factura.store');
 
     Route::middleware('can:manage-finances')->group(function () {
+        Route::get('/finanzas', [FinanceController::class, 'index'])->name('finanzas.index');
+        Route::get('/finanzas/ingresos', [IncomeController::class, 'index'])->name('finanzas.ingresos.index');
+        Route::get('/finanzas/ingresos/crear', [IncomeController::class, 'create'])->name('finanzas.ingresos.create');
+        Route::post('/finanzas/ingresos', [IncomeController::class, 'store'])->name('finanzas.ingresos.store');
+        Route::get('/finanzas/gastos', [ExpenseController::class, 'index'])->name('finanzas.gastos.index');
+        Route::get('/finanzas/gastos/crear', [ExpenseController::class, 'create'])->name('finanzas.gastos.create');
+        Route::post('/finanzas/gastos', [ExpenseController::class, 'store'])->name('finanzas.gastos.store');
+
         Route::post('/facturas/{invoice}/cancelar', [InvoiceController::class, 'cancel'])->name('facturas.cancel');
 
         Route::get('/pagos', [PaymentController::class, 'index'])->name('pagos.index');

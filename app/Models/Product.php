@@ -53,4 +53,32 @@ class Product extends Model
     {
         return $this->hasMany(SaleDetail::class);
     }
+
+    public function isAvailable(): bool
+    {
+        return ($this->inventory?->stock ?? 0) > 0;
+    }
+
+    public function isPurchasable(): bool
+    {
+        return $this->is_active
+            && ($this->category?->is_active ?? false)
+            && $this->isAvailable();
+    }
+
+    public function availabilityLabel(): string
+    {
+        if (! $this->isAvailable()) {
+            return 'Agotado';
+        }
+
+        if (
+            $this->inventory->minimum_stock > 0
+            && $this->inventory->stock <= $this->inventory->minimum_stock
+        ) {
+            return 'Stock bajo';
+        }
+
+        return 'Disponible';
+    }
 }

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-#[Fillable(['customer_id', 'quote_id', 'number', 'status', 'order_date', 'notes', 'total'])]
+#[Fillable(['customer_id', 'address_id', 'quote_id', 'number', 'origin', 'status', 'order_date', 'notes', 'total'])]
 class Order extends Model
 {
     public const int MAX_TOTAL_CENTS = 99_999_999_999_999;
@@ -33,6 +33,11 @@ class Order extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
     }
 
     public function quote(): BelongsTo

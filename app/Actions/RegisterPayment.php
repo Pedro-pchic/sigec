@@ -13,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class RegisterPayment
 {
+    public function __construct(private RecordPaymentIncome $recordPaymentIncome) {}
+
     public function handle(
         Invoice $invoice,
         string $amount,
@@ -50,6 +52,8 @@ class RegisterPayment
                 'method' => $method,
                 'notes' => $notes,
             ]);
+
+            $this->recordPaymentIncome->handle($payment);
 
             $invoice->synchronizeStatus();
 

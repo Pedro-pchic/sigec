@@ -1,3 +1,43 @@
+const sidebar = document.querySelector('[data-admin-sidebar]');
+const sidebarOverlay = document.querySelector('[data-sidebar-overlay]');
+const sidebarOpenButton = document.querySelector('[data-sidebar-open]');
+const sidebarCloseButton = document.querySelector('[data-sidebar-close]');
+
+if (sidebar && sidebarOverlay && sidebarOpenButton && sidebarCloseButton) {
+    const setSidebarOpen = (isOpen) => {
+        sidebar.classList.toggle('-translate-x-full', !isOpen);
+        sidebarOverlay.classList.toggle('pointer-events-none', !isOpen);
+        sidebarOverlay.classList.toggle('opacity-0', !isOpen);
+        sidebarOpenButton.setAttribute('aria-expanded', String(isOpen));
+        document.body.classList.toggle('overflow-hidden', isOpen);
+
+        if (isOpen) {
+            sidebarCloseButton.focus();
+        }
+    };
+
+    sidebarOpenButton.addEventListener('click', () => setSidebarOpen(true));
+    sidebarCloseButton.addEventListener('click', () => setSidebarOpen(false));
+    sidebarOverlay.addEventListener('click', () => setSidebarOpen(false));
+
+    sidebar.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setSidebarOpen(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && sidebarOpenButton.getAttribute('aria-expanded') === 'true') {
+            setSidebarOpen(false);
+            sidebarOpenButton.focus();
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.matchMedia('(min-width: 64rem)').matches) {
+            setSidebarOpen(false);
+        }
+    });
+}
+
 document.querySelectorAll('[data-purchase-form]').forEach((form) => {
     const lines = form.querySelector('[data-purchase-lines]');
     const template = form.querySelector('[data-purchase-line-template]');
