@@ -38,4 +38,19 @@ class Product extends Model
     {
         return $this->hasMany(PurchaseDetail::class);
     }
+
+    public function quoteDetails(): HasMany
+    {
+        return $this->hasMany(QuoteDetail::class);
+    }
+
+    public function orderDetails(): HasMany
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
+
+    public function saleDetails(): HasMany
+    {
+        return $this->hasMany(SaleDetail::class);
+    }
 }

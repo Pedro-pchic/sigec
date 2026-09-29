@@ -47,6 +47,12 @@ class AppServiceProvider extends ServiceProvider
             true,
         ));
 
+        Gate::define('manage-commercial', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::SALES],
+            true,
+        ));
+
         Gate::define('view-purchases', fn (User $user): bool => in_array(
             $user->role?->name,
             [Role::ADMINISTRATOR, Role::PURCHASING, Role::WAREHOUSE],

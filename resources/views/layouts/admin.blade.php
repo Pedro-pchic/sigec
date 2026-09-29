@@ -40,6 +40,15 @@
                         <a href="{{ route('compras.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Órdenes</a>
                     </div>
                 @endcan
+                @can('manage-commercial')
+                    <div class="flex items-center gap-1 rounded-md border border-slate-200 p-1">
+                        <span class="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Comercial</span>
+                        <a href="{{ route('clientes.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Clientes</a>
+                        <a href="{{ route('cotizaciones.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Cotizaciones</a>
+                        <a href="{{ route('pedidos.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Pedidos</a>
+                        <a href="{{ route('ventas.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Ventas</a>
+                    </div>
+                @endcan
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="rounded-md bg-slate-900 px-3 py-2 text-white hover:bg-slate-700">Cerrar sesión</button>
