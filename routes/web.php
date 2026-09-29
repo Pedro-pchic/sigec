@@ -1,10 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
 
@@ -31,5 +33,17 @@ Route::middleware(['auth', 'active'])->group(function () {
             ->parameters(['empleados' => 'employee'])
             ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
         Route::patch('/empleados/{employee}/estado', [EmployeeController::class, 'toggleStatus'])->name('empleados.status');
+    });
+
+    Route::middleware('can:manage-catalog')->group(function () {
+        Route::resource('categorias', CategoryController::class)
+            ->parameters(['categorias' => 'category'])
+            ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+        Route::patch('/categorias/{category}/estado', [CategoryController::class, 'toggleStatus'])->name('categorias.status');
+
+        Route::resource('productos', ProductController::class)
+            ->parameters(['productos' => 'product'])
+            ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+        Route::patch('/productos/{product}/estado', [ProductController::class, 'toggleStatus'])->name('productos.status');
     });
 });
