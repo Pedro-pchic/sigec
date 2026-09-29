@@ -51,7 +51,7 @@ class UserAdministrationTest extends TestCase
     {
         $administrator = $this->administrator();
         $originalRole = Role::factory()->create(['name' => 'Bodega']);
-        $newRole = Role::factory()->create(['name' => 'Compras']);
+        $newRole = Role::factory()->create(['name' => Role::PURCHASING]);
         $user = User::factory()->for($originalRole)->create();
 
         $this->actingAs($administrator)

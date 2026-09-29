@@ -3,11 +3,12 @@
 @section('title', 'Iniciar sesión')
 
 @section('content')
-    <div class="rounded-2xl bg-white p-8 shadow-xl ring-1 ring-slate-200">
+    <div class="rounded-3xl bg-stone-50 p-7 shadow-2xl shadow-black/20 ring-1 ring-white/15 sm:p-9">
         <div class="mb-8 text-center">
-            <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">SIGEC</p>
-            <h1 class="mt-2 text-2xl font-bold">Iniciar sesión</h1>
-            <p class="mt-2 text-sm text-slate-600">Ingresa tus credenciales para continuar.</p>
+            <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-brand-700 text-xl font-black text-white shadow-sm">S</span>
+            <p class="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-brand-700">SIGEC</p>
+            <h1 class="mt-2 text-2xl font-bold text-stone-950">Iniciar sesión</h1>
+            <p class="mt-2 text-sm text-stone-600">Ingresa tus credenciales para continuar.</p>
         </div>
 
         @if ($errors->any())
@@ -22,21 +23,21 @@
             <div>
                 <label for="email" class="block text-sm font-medium">Correo electrónico</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username"
-                    class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    class="mt-2 w-full rounded-lg border border-stone-300 px-3 py-2 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
             </div>
 
             <div>
                 <label for="password" class="block text-sm font-medium">Contraseña</label>
                 <input id="password" name="password" type="password" required autocomplete="current-password"
-                    class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    class="mt-2 w-full rounded-lg border border-stone-300 px-3 py-2 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
             </div>
 
-            <label class="flex items-center gap-2 text-sm text-slate-700">
-                <input name="remember" type="checkbox" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+            <label class="flex items-center gap-2 text-sm text-stone-700">
+                <input name="remember" type="checkbox" value="1" class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
                 Recordarme
             </label>
 
-            <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2.5 font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <button type="submit" class="rounded-lg bg-brand-700 px-4 py-2.5 font-semibold text-white shadow-sm hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                 Ingresar
             </button>
         </form>

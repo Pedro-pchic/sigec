@@ -6,63 +6,249 @@
     <title>@yield('title', 'Administración') | SIGEC</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-slate-100 text-slate-900">
-    <header class="border-b border-slate-200 bg-white shadow-sm">
-        <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-            <a href="{{ route('dashboard') }}" class="text-xl font-bold tracking-tight text-indigo-700">SIGEC</a>
+<body class="min-h-screen overflow-x-hidden bg-stone-100 text-stone-900 antialiased">
+    <div data-sidebar-overlay class="pointer-events-none fixed inset-0 z-40 bg-stone-950/55 opacity-0 transition-opacity duration-200 lg:hidden" aria-hidden="true"></div>
 
-            <nav class="flex flex-wrap items-center gap-2 text-sm font-medium" aria-label="Navegación principal">
-                <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 hover:bg-slate-100">Dashboard</a>
-                @can('manage-users')
-                    <a href="{{ route('usuarios.index') }}" class="rounded-md px-3 py-2 hover:bg-slate-100">Usuarios</a>
-                @endcan
-                @can('manage-employees')
-                    <a href="{{ route('empleados.index') }}" class="rounded-md px-3 py-2 hover:bg-slate-100">Empleados</a>
-                @endcan
-                @can('manage-catalog')
-                    <div class="flex items-center gap-1 rounded-md border border-slate-200 p-1">
-                        <span class="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Catálogo</span>
-                        <a href="{{ route('categorias.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Categorías</a>
-                        <a href="{{ route('productos.index') }}" class="rounded-md px-3 py-1.5 hover:bg-slate-100">Productos</a>
+    <aside id="admin-sidebar" data-admin-sidebar class="fixed inset-y-0 left-0 z-50 flex w-72 -transtone-x-full flex-col bg-stone-950 text-stone-100 shadow-2xl transition-transform duration-200 ease-out lg:transtone-x-0 lg:shadow-none" aria-label="Navegación principal">
+        <div class="flex h-20 shrink-0 items-center justify-between border-b border-white/10 px-5">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-400">
+                <span class="grid size-10 place-items-center rounded-xl bg-brand-700 text-lg font-black text-white shadow-sm ring-1 ring-white/10">S</span>
+                <span>
+                    <span class="block text-lg font-bold tracking-wide text-white">SIGEC</span>
+                    <span class="block text-[0.68rem] font-medium uppercase tracking-[0.18em] text-stone-400">Calzado &amp; gestión</span>
+                </span>
+            </a>
+            <button type="button" data-sidebar-close class="grid size-10 place-items-center rounded-lg text-stone-300 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-brand-400 lg:hidden" aria-label="Cerrar navegación">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" d="M6 6l12 12M18 6 6 18" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto px-4 py-5 text-sm" aria-label="Secciones administrativas">
+            <div class="flex flex-col gap-1">
+                <a href="{{ route('dashboard') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold transition-colors',
+                    'bg-brand-700 text-white shadow-sm' => request()->routeIs('dashboard'),
+                    'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('dashboard'),
+                ])>
+                    <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
+                    Dashboard
+                </a>
+            </div>
+
+            @canany(['manage-users', 'manage-employees'])
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Administración</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        @can('manage-users')
+                            <a href="{{ route('usuarios.index') }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs('usuarios.*'),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('usuarios.*'),
+                            ])>Usuarios</a>
+                        @endcan
+                        @can('manage-employees')
+                            <a href="{{ route('empleados.index') }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs('empleados.*'),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('empleados.*'),
+                            ])>Empleados</a>
+                        @endcan
                     </div>
-                @endcan
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="rounded-md bg-slate-900 px-3 py-2 text-white hover:bg-slate-700">Cerrar sesión</button>
-                </form>
-            </nav>
+                </div>
+            @endcanany
+
+            @can('manage-catalog')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Catálogo</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <a href="{{ route('categorias.index') }}" @class([
+                            'rounded-lg px-3 py-2 font-medium transition-colors',
+                            'bg-brand-700 text-white' => request()->routeIs('categorias.*'),
+                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('categorias.*'),
+                        ])>Categorías</a>
+                        <a href="{{ route('productos.index') }}" @class([
+                            'rounded-lg px-3 py-2 font-medium transition-colors',
+                            'bg-brand-700 text-white' => request()->routeIs('productos.*'),
+                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('productos.*'),
+                        ])>Productos</a>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Inventario</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <a href="{{ route('inventario.existencias') }}" @class([
+                            'rounded-lg px-3 py-2 font-medium transition-colors',
+                            'bg-brand-700 text-white' => request()->routeIs('inventario.existencias'),
+                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('inventario.existencias'),
+                        ])>Existencias</a>
+                        <a href="{{ route('inventario.movimientos.index') }}" @class([
+                            'rounded-lg px-3 py-2 font-medium transition-colors',
+                            'bg-brand-700 text-white' => request()->routeIs('inventario.movimientos.*'),
+                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('inventario.movimientos.*'),
+                        ])>Movimientos</a>
+                    </div>
+                </div>
+            @endcan
+
+            @can('view-purchases')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Compras</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        @can('manage-purchases')
+                            <a href="{{ route('proveedores.index') }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs('proveedores.*'),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('proveedores.*'),
+                            ])>Proveedores</a>
+                        @endcan
+                        <a href="{{ route('compras.index') }}" @class([
+                            'rounded-lg px-3 py-2 font-medium transition-colors',
+                            'bg-brand-700 text-white' => request()->routeIs('compras.*'),
+                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('compras.*'),
+                        ])>Órdenes</a>
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-commercial')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Comercial</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        @foreach ([
+                            ['route' => 'clientes.index', 'active' => 'clientes.*', 'label' => 'Clientes'],
+                            ['route' => 'cotizaciones.index', 'active' => 'cotizaciones.*', 'label' => 'Cotizaciones'],
+                            ['route' => 'pedidos.index', 'active' => 'pedidos.*', 'label' => 'Pedidos'],
+                            ['route' => 'ventas.index', 'active' => 'ventas.*', 'label' => 'Ventas'],
+                        ] as $item)
+                            <a href="{{ route($item['route']) }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs($item['active']),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs($item['active']),
+                            ])>{{ $item['label'] }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            @endcan
+
+            @can('view-invoices')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Facturación</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <a href="{{ route('facturas.index') }}" @class([
+                            'rounded-lg px-3 py-2 font-medium transition-colors',
+                            'bg-brand-700 text-white' => request()->routeIs('facturas.*'),
+                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('facturas.*'),
+                        ])>Facturas</a>
+                        @can('manage-finances')
+                            <a href="{{ route('pagos.index') }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs('pagos.*'),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('pagos.*'),
+                            ])>Pagos</a>
+                            <a href="{{ route('notas-credito.index') }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs('notas-credito.*'),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('notas-credito.*'),
+                            ])>Notas de crédito</a>
+                        @endcan
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-finances')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Finanzas</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        @foreach ([
+                            ['route' => 'finanzas.index', 'active' => 'finanzas.index', 'label' => 'Resumen'],
+                            ['route' => 'finanzas.ingresos.index', 'active' => 'finanzas.ingresos.*', 'label' => 'Ingresos'],
+                            ['route' => 'finanzas.gastos.index', 'active' => 'finanzas.gastos.*', 'label' => 'Gastos'],
+                        ] as $item)
+                            <a href="{{ route($item['route']) }}" @class([
+                                'rounded-lg px-3 py-2 font-medium transition-colors',
+                                'bg-brand-700 text-white' => request()->routeIs($item['active']),
+                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs($item['active']),
+                            ])>{{ $item['label'] }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            @endcan
+        </nav>
+
+        <div class="shrink-0 border-t border-white/10 px-5 py-4 text-xs text-stone-500">
+            Sistema integral de gestión comercial
         </div>
-    </header>
+    </aside>
 
-    <main class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">@yield('heading')</h1>
-                @hasSection('subheading')
-                    <p class="mt-1 text-sm text-slate-600">@yield('subheading')</p>
-                @endif
+    <div class="min-h-screen lg:pl-72">
+        <header class="sticky top-0 z-30 border-b border-stone-200/90 bg-white/95 backdrop-blur">
+            <div class="flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+                <div class="flex min-w-0 items-center gap-3">
+                    <button type="button" data-sidebar-open class="grid size-10 shrink-0 place-items-center rounded-lg border border-stone-200 bg-white text-stone-700 shadow-sm hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-brand-600 lg:hidden" aria-controls="admin-sidebar" aria-expanded="false" aria-label="Abrir navegación">
+                        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+                        </svg>
+                    </button>
+                    <div class="min-w-0">
+                        <p class="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-brand-700">Panel administrativo</p>
+                        <p class="truncate text-base font-semibold text-stone-900 sm:text-lg">@yield('heading')</p>
+                    </div>
+                </div>
+
+                <div class="flex shrink-0 items-center gap-3">
+                    <div class="hidden text-right sm:block">
+                        <p class="max-w-48 truncate text-sm font-semibold text-stone-800">{{ auth()->user()->name }}</p>
+                        <p class="max-w-48 truncate text-xs text-stone-500">{{ auth()->user()->email }}</p>
+                    </div>
+                    <span class="grid size-9 place-items-center rounded-full bg-brand-100 text-sm font-bold text-brand-800 ring-1 ring-brand-200" aria-hidden="true">
+                        {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                    </span>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-semibold text-stone-700 shadow-sm hover:border-brand-300 hover:bg-brand-50 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+                            <span class="hidden sm:inline">Cerrar sesión</span>
+                            <span class="sm:hidden">Salir</span>
+                        </button>
+                    </form>
+                </div>
             </div>
-            @yield('actions')
-        </div>
+        </header>
 
-        @if (session('status'))
-            <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
-                {{ session('status') }}
+        <main data-admin-content class="mx-auto flex w-full max-w-[100rem] flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">@yield('heading')</h1>
+                    @hasSection('subheading')
+                        <p class="mt-1.5 max-w-3xl text-sm leading-6 text-stone-600">@yield('subheading')</p>
+                    @endif
+                </div>
+                <div class="flex shrink-0 flex-wrap gap-2">
+                    @yield('actions')
+                </div>
             </div>
-        @endif
 
-        @if ($errors->any())
-            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
-                <p class="font-semibold">Revisa los datos ingresados.</p>
-                <ul class="mt-2 list-disc space-y-1 pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            @if (session('status'))
+                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900 shadow-sm" role="status">
+                    {{ session('status') }}
+                </div>
+            @endif
 
-        @yield('content')
-    </main>
+            @if ($errors->any())
+                <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 shadow-sm" role="alert">
+                    <p class="font-semibold">Revisa los datos ingresados.</p>
+                    <ul class="mt-2 list-disc space-y-1 pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @yield('content')
+        </main>
+    </div>
 </body>
 </html>

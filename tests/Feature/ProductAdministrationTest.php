@@ -37,6 +37,14 @@ class ProductAdministrationTest extends TestCase
             'price' => 499.90,
             'is_active' => true,
         ]);
+
+        $product = Product::query()->where('sku', 'CAL-001')->firstOrFail();
+
+        $this->assertDatabaseHas('inventories', [
+            'product_id' => $product->id,
+            'stock' => 0,
+            'minimum_stock' => 0,
+        ]);
     }
 
     public function test_administrator_can_view_product_with_its_category(): void

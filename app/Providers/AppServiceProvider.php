@@ -41,6 +41,44 @@ class AppServiceProvider extends ServiceProvider
             true,
         ));
 
+        Gate::define('manage-purchases', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::PURCHASING],
+            true,
+        ));
+
+        Gate::define('manage-commercial', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::SALES],
+            true,
+        ));
+
+        Gate::define('view-purchases', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::PURCHASING, Role::WAREHOUSE],
+            true,
+        ));
+
+        Gate::define('receive-purchases', fn (User $user): bool => $user->can('view-purchases'));
+
+        Gate::define('manage-finances', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::FINANCE],
+            true,
+        ));
+
+        Gate::define('view-invoices', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::SALES, Role::FINANCE],
+            true,
+        ));
+
+        Gate::define('issue-invoices', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::SALES],
+            true,
+        ));
+
         RateLimiter::for('login', function (Request $request): Limit {
             $email = $request->input('email');
             $email = is_string($email) ? Str::lower($email) : '';
@@ -48,5 +86,7 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)
                 ->by(Str::transliterate($email.'|'.$request->ip()));
         });
+
+        RateLimiter::for('checkout', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
     }
 }

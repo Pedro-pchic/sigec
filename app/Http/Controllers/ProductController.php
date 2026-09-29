@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -32,7 +33,16 @@ class ProductController extends Controller
         $data = $request->validated();
         $data['is_active'] = $data['is_active'] ?? true;
 
-        $product = Product::create($data);
+        $product = DB::transaction(function () use ($data): Product {
+            $product = Product::create($data);
+
+            $product->inventory()->firstOrCreate([], [
+                'stock' => 0,
+                'minimum_stock' => 0,
+            ]);
+
+            return $product;
+        });
 
         return redirect()->route('productos.show', $product)->with('status', 'Producto creado correctamente.');
     }
