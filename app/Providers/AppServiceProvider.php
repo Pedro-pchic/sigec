@@ -88,5 +88,15 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('checkout', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
+
+        RateLimiter::for('contact', function (Request $request): Limit {
+            $email = $request->input('email');
+            $email = is_string($email) ? Str::lower($email) : '';
+
+            return Limit::perMinute(5)
+                ->by(Str::transliterate($email.'|'.$request->ip()));
+        });
+
+        RateLimiter::for('order-tracking', fn (Request $request): Limit => Limit::perMinute(10)->by($request->ip()));
     }
 }

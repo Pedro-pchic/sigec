@@ -8,14 +8,17 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerInquiryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
@@ -25,7 +28,16 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/dashboard');
+Route::get('/', HomeController::class)->name('inicio');
+Route::view('/nosotros', 'portal.about')->name('nosotros');
+Route::get('/contacto', [CustomerInquiryController::class, 'create'])->name('contacto.create');
+Route::post('/contacto', [CustomerInquiryController::class, 'store'])
+    ->middleware('throttle:contact')
+    ->name('contacto.store');
+Route::get('/seguimiento', [OrderTrackingController::class, 'create'])->name('seguimiento.create');
+Route::post('/seguimiento', [OrderTrackingController::class, 'show'])
+    ->middleware('throttle:order-tracking')
+    ->name('seguimiento.show');
 
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalogo.index');
 Route::get('/catalogo/{product}', [CatalogController::class, 'show'])->name('catalogo.show');
@@ -130,6 +142,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('compras.receive');
 
     Route::middleware('can:manage-commercial')->group(function () {
+        Route::get('/consultas', [CustomerInquiryController::class, 'index'])->name('consultas.index');
+        Route::get('/consultas/{inquiry}', [CustomerInquiryController::class, 'show'])->name('consultas.show');
+        Route::patch('/consultas/{inquiry}', [CustomerInquiryController::class, 'update'])->name('consultas.update');
+
         Route::resource('clientes', CustomerController::class)
             ->parameters(['clientes' => 'customer'])
             ->only(['index', 'create', 'store', 'show', 'edit', 'update']);

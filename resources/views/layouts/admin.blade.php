@@ -83,6 +83,7 @@
                             ['route' => 'cotizaciones.index', 'active' => 'cotizaciones.*', 'label' => 'Cotizaciones'],
                             ['route' => 'pedidos.index', 'active' => 'pedidos.*', 'label' => 'Pedidos'],
                             ['route' => 'ventas.index', 'active' => 'ventas.*', 'label' => 'Ventas'],
+                            ['route' => 'consultas.index', 'active' => 'consultas.*', 'label' => 'Consultas'],
                         ] as $item)
                             <x-admin.nav-link :active="request()->routeIs($item['active'])" href="{{ route($item['route']) }}">{{ $item['label'] }}</x-admin.nav-link>
                         @endforeach
