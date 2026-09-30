@@ -12,7 +12,7 @@
             ['label' => 'Total de empleados', 'value' => $totalEmployees, 'eyebrow' => 'Equipo'],
             ['label' => 'Empleados activos', 'value' => $activeEmployees, 'eyebrow' => 'Equipo'],
         ] as $metric)
-            <article class="relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
+            <article class="ui-card relative overflow-hidden p-6">
                 <span class="absolute inset-y-0 left-0 w-1 bg-brand-600" aria-hidden="true"></span>
                 <div class="flex items-start justify-between gap-4">
                     <div>

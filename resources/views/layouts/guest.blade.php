@@ -6,7 +6,7 @@
     <title>@yield('title', 'Acceso') | SIGEC</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-stone-950 text-stone-900 antialiased">
+<body class="min-h-screen bg-espresso text-stone-900 antialiased">
     <main class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
         <div class="absolute inset-x-0 top-0 h-64 bg-brand-900/35" aria-hidden="true"></div>
         <div class="absolute -right-24 -top-24 size-80 rounded-full border border-white/8" aria-hidden="true"></div>
