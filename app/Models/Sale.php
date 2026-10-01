@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\SaleStatus;
 use Database\Factories\SaleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +26,12 @@ class Sale extends Model
             'sale_date' => 'date',
             'total' => 'decimal:2',
         ];
+    }
+
+    #[Scope]
+    protected function confirmed(Builder $query): void
+    {
+        $query->where('status', SaleStatus::Confirmed);
     }
 
     public function order(): BelongsTo

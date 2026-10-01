@@ -95,6 +95,7 @@ class SaveOrder
                 $attributes['number'] = 'PED-'.Str::upper((string) Str::ulid());
                 $attributes['status'] = OrderStatus::Pending;
                 $lockedOrder = Order::create($attributes);
+                $lockedOrder->recordStatusHistory(OrderStatus::Pending);
             } else {
                 $lockedOrder->update($attributes);
                 $lockedOrder->details()->delete();

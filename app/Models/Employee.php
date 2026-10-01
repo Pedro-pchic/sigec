@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'nombres', 'apellidos', 'telefono', 'direccion', 'puesto', 'fecha_contratacion', 'is_active'])]
+#[Fillable(['user_id', 'position_id', 'nombres', 'apellidos', 'telefono', 'direccion', 'puesto', 'fecha_contratacion', 'is_active'])]
 class Employee extends Model
 {
     /** @use HasFactory<EmployeeFactory> */
@@ -25,5 +25,10 @@ class Employee extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class);
     }
 }

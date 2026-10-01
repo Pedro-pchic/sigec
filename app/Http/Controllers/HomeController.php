@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\RecordEcommerceEvent;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -12,8 +14,10 @@ class HomeController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(): View
+    public function __invoke(Request $request, RecordEcommerceEvent $recordEcommerceEvent): View
     {
+        $recordEcommerceEvent->recordPortalVisit($request);
+
         $categories = Category::query()
             ->where('is_active', true)
             ->orderBy('name')

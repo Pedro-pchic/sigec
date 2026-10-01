@@ -30,19 +30,34 @@
                 <x-admin.nav-link :active="request()->routeIs('dashboard')" href="{{ route('dashboard') }}">Dashboard</x-admin.nav-link>
             </div>
 
-            @canany(['manage-users', 'manage-employees'])
+            @can('view-management-dashboard')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Control de Gesti&#243;n</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('gestion.reportes.*')" href="{{ route('gestion.reportes.index') }}">Reportes</x-admin.nav-link>
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-users')
                 <div class="mt-6">
                     <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Administración</p>
                     <div class="mt-2 flex flex-col gap-1">
-                        @can('manage-users')
-                            <x-admin.nav-link :active="request()->routeIs('usuarios.*')" href="{{ route('usuarios.index') }}">Usuarios</x-admin.nav-link>
-                        @endcan
-                        @can('manage-employees')
-                            <x-admin.nav-link :active="request()->routeIs('empleados.*')" href="{{ route('empleados.index') }}">Empleados</x-admin.nav-link>
-                        @endcan
+                        <x-admin.nav-link :active="request()->routeIs('usuarios.*')" href="{{ route('usuarios.index') }}">Usuarios</x-admin.nav-link>
                     </div>
                 </div>
-            @endcanany
+            @endcan
+
+            @can('manage-employees')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Recursos Humanos</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('empleados.*')" href="{{ route('empleados.index') }}">Empleados</x-admin.nav-link>
+                        <x-admin.nav-link :active="request()->routeIs('departamentos.*')" href="{{ route('departamentos.index') }}">Departamentos</x-admin.nav-link>
+                        <x-admin.nav-link :active="request()->routeIs('puestos.*')" href="{{ route('puestos.index') }}">Puestos</x-admin.nav-link>
+                    </div>
+                </div>
+            @endcan
 
             @can('manage-catalog')
                 <div class="mt-6">
@@ -87,6 +102,24 @@
                         ] as $item)
                             <x-admin.nav-link :active="request()->routeIs($item['active'])" href="{{ route($item['route']) }}">{{ $item['label'] }}</x-admin.nav-link>
                         @endforeach
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-logistics')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Operaciones</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('operaciones.logistica.*')" href="{{ route('operaciones.logistica.index') }}">Logística</x-admin.nav-link>
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-commercial')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Marketing</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('marketing.analytics.*')" href="{{ route('marketing.analytics.index') }}">Analítica</x-admin.nav-link>
                     </div>
                 </div>
             @endcan

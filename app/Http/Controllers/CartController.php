@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Actions\LoadCart;
+use App\Actions\RecordEcommerceEvent;
 use App\Http\Requests\AddCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -19,15 +21,23 @@ class CartController extends Controller
         return view('cart.index', compact('cart'));
     }
 
-    public function store(AddCartItemRequest $request, Product $product): RedirectResponse
-    {
+    public function store(
+        AddCartItemRequest $request,
+        Product $product,
+        RecordEcommerceEvent $recordEcommerceEvent,
+    ): RedirectResponse {
         $cart = session(LoadCart::SESSION_KEY, []);
+        $isNewCart = $cart === [];
         $quantity = ($cart[$product->getKey()] ?? 0) + $request->integer('quantity');
 
         $this->ensurePurchasable($product, $quantity);
 
         $cart[$product->getKey()] = $quantity;
         $request->session()->put(LoadCart::SESSION_KEY, $cart);
+
+        if ($isNewCart) {
+            $recordEcommerceEvent->recordCartStarted($request);
+        }
 
         return redirect()->route('carrito.index')->with('status', 'Producto agregado al carrito.');
     }
@@ -49,18 +59,26 @@ class CartController extends Controller
         return back()->with('status', 'Cantidad actualizada.');
     }
 
-    public function destroy(Product $product): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        Product $product,
+        RecordEcommerceEvent $recordEcommerceEvent,
+    ): RedirectResponse {
         $cart = session(LoadCart::SESSION_KEY, []);
         unset($cart[$product->getKey()]);
-        session()->put(LoadCart::SESSION_KEY, $cart);
+        $request->session()->put(LoadCart::SESSION_KEY, $cart);
+
+        if ($cart === []) {
+            $recordEcommerceEvent->resetCartLifecycle($request);
+        }
 
         return back()->with('status', 'Producto eliminado del carrito.');
     }
 
-    public function clear(): RedirectResponse
+    public function clear(Request $request, RecordEcommerceEvent $recordEcommerceEvent): RedirectResponse
     {
-        session()->forget(LoadCart::SESSION_KEY);
+        $request->session()->forget(LoadCart::SESSION_KEY);
+        $recordEcommerceEvent->resetCartLifecycle($request);
 
         return back()->with('status', 'Carrito vaciado.');
     }

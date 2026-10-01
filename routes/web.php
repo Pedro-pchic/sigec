@@ -10,6 +10,7 @@ use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerInquiryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
@@ -17,9 +18,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ManagementReportController;
+use App\Http\Controllers\MarketingAnalyticsController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderLogisticsController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
@@ -66,6 +71,24 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::middleware('can:view-management-dashboard')
+        ->prefix('control-gestion')
+        ->name('gestion.')
+        ->group(function () {
+            Route::get('/reportes', [ManagementReportController::class, 'index'])->name('reportes.index');
+        });
+
+    Route::middleware('can:manage-logistics')
+        ->prefix('operaciones/logistica')
+        ->name('operaciones.logistica.')
+        ->group(function () {
+            Route::get('/', [OrderLogisticsController::class, 'index'])->name('index');
+            Route::get('/pedidos/{order}', [OrderLogisticsController::class, 'show'])->name('show');
+            Route::post('/pedidos/{order}/avanzar', [OrderLogisticsController::class, 'advance'])->name('advance');
+            Route::patch('/pedidos/{order}/entrega-estimada', [OrderLogisticsController::class, 'estimate'])
+                ->name('estimate');
+        });
 
     Route::middleware('can:view-invoices')->group(function () {
         Route::get('/facturas', [InvoiceController::class, 'index'])->name('facturas.index');
@@ -115,6 +138,16 @@ Route::middleware(['auth', 'active'])->group(function () {
             ->parameters(['empleados' => 'employee'])
             ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
         Route::patch('/empleados/{employee}/estado', [EmployeeController::class, 'toggleStatus'])->name('empleados.status');
+
+        Route::resource('departamentos', DepartmentController::class)
+            ->parameters(['departamentos' => 'department'])
+            ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+        Route::patch('/departamentos/{department}/estado', [DepartmentController::class, 'toggleStatus'])->name('departamentos.status');
+
+        Route::resource('puestos', PositionController::class)
+            ->parameters(['puestos' => 'position'])
+            ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+        Route::patch('/puestos/{position}/estado', [PositionController::class, 'toggleStatus'])->name('puestos.status');
     });
 
     Route::middleware('can:manage-purchases')->group(function () {
@@ -142,6 +175,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('compras.receive');
 
     Route::middleware('can:manage-commercial')->group(function () {
+        Route::get('/marketing/analitica', [MarketingAnalyticsController::class, 'index'])
+            ->name('marketing.analytics.index');
+
         Route::get('/consultas', [CustomerInquiryController::class, 'index'])->name('consultas.index');
         Route::get('/consultas/{inquiry}', [CustomerInquiryController::class, 'show'])->name('consultas.show');
         Route::patch('/consultas/{inquiry}', [CustomerInquiryController::class, 'update'])->name('consultas.update');

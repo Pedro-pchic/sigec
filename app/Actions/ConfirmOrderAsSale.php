@@ -118,7 +118,11 @@ class ConfirmOrderAsSale
                 );
             }
 
-            $lockedOrder->update(['status' => OrderStatus::Completed]);
+            $lockedOrder->update([
+                'status' => OrderStatus::Completed,
+                'logistics_status' => OrderStatus::Confirmed,
+            ]);
+            $lockedOrder->recordStatusHistory(OrderStatus::Completed, $user);
 
             return $sale->load(['customer', 'order', 'details.product']);
         }, attempts: 3);

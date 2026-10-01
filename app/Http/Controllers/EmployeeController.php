@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
+use App\Models\Position;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -16,7 +17,7 @@ class EmployeeController extends Controller
      */
     public function index(): View
     {
-        $employees = Employee::with('user')
+        $employees = Employee::with(['user', 'position.department'])
             ->orderBy('apellidos')
             ->orderBy('nombres')
             ->paginate(15);
@@ -30,8 +31,12 @@ class EmployeeController extends Controller
     public function create(): View
     {
         $users = User::whereDoesntHave('employee')->orderBy('name')->get();
+        $positions = Position::with('department')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
-        return view('employees.create', compact('users'));
+        return view('employees.create', compact('positions', 'users'));
     }
 
     /**
@@ -52,7 +57,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee): View
     {
-        $employee->load('user');
+        $employee->load(['user', 'position.department']);
 
         return view('employees.show', compact('employee'));
     }
@@ -66,8 +71,15 @@ class EmployeeController extends Controller
             ->orWhere('id', $employee->user_id)
             ->orderBy('name')
             ->get();
+        $positionsQuery = Position::with('department')->where('is_active', true);
 
-        return view('employees.edit', compact('employee', 'users'));
+        if ($employee->position_id !== null) {
+            $positionsQuery->orWhereKey($employee->position_id);
+        }
+
+        $positions = $positionsQuery->orderBy('name')->get();
+
+        return view('employees.edit', compact('employee', 'positions', 'users'));
     }
 
     /**
