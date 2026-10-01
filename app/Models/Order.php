@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Enums\SaleStatus;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +16,21 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-#[Fillable(['customer_id', 'address_id', 'quote_id', 'number', 'origin', 'status', 'order_date', 'notes', 'total'])]
+#[Fillable([
+    'customer_id',
+    'address_id',
+    'quote_id',
+    'number',
+    'origin',
+    'status',
+    'logistics_status',
+    'estimated_delivery_at',
+    'dispatched_at',
+    'delivered_at',
+    'order_date',
+    'notes',
+    'total',
+])]
 class Order extends Model
 {
     public const int MAX_TOTAL_CENTS = 99_999_999_999_999;
@@ -25,9 +42,36 @@ class Order extends Model
     {
         return [
             'status' => OrderStatus::class,
+            'logistics_status' => OrderStatus::class,
             'order_date' => 'date',
             'total' => 'decimal:2',
+            'estimated_delivery_at' => 'datetime',
+            'dispatched_at' => 'datetime',
+            'delivered_at' => 'datetime',
         ];
+    }
+
+    #[Scope]
+    protected function eligibleForLogistics(Builder $query): void
+    {
+        $query
+            ->where('status', OrderStatus::Completed)
+            ->whereHas('sale', fn (Builder $saleQuery): Builder => $saleQuery->confirmed());
+    }
+
+    #[Scope]
+    protected function delayed(Builder $query): void
+    {
+        $query
+            ->whereNotNull('estimated_delivery_at')
+            ->where('estimated_delivery_at', '<', now())
+            ->where('status', '<>', OrderStatus::Cancelled)
+            ->whereDoesntHave('sale', fn (Builder $saleQuery): Builder => $saleQuery->where('status', SaleStatus::Cancelled))
+            ->where(function (Builder $statusQuery): void {
+                $statusQuery
+                    ->whereNull('logistics_status')
+                    ->orWhereNotIn('logistics_status', [OrderStatus::Delivered, OrderStatus::Cancelled]);
+            });
     }
 
     public function customer(): BelongsTo
@@ -55,14 +99,58 @@ class Order extends Model
         return $this->hasOne(Sale::class);
     }
 
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)
+            ->orderBy('occurred_at')
+            ->orderBy('id');
+    }
+
     public function isEditable(): bool
     {
         return $this->status === OrderStatus::Pending;
     }
 
-    public function transitionTo(OrderStatus $status): void
+    public function currentStatus(): OrderStatus
     {
-        DB::transaction(function () use ($status): void {
+        if (
+            $this->status === OrderStatus::Cancelled
+            || ($this->relationLoaded('sale') && $this->sale?->status === SaleStatus::Cancelled)
+        ) {
+            return OrderStatus::Cancelled;
+        }
+
+        if ($this->logistics_status instanceof OrderStatus) {
+            return $this->logistics_status;
+        }
+
+        return $this->status === OrderStatus::Completed
+            ? OrderStatus::Confirmed
+            : $this->status;
+    }
+
+    public function isDelayed(): bool
+    {
+        return $this->estimated_delivery_at?->isPast() === true
+            && ! in_array($this->currentStatus(), [OrderStatus::Delivered, OrderStatus::Cancelled], true);
+    }
+
+    public function recordStatusHistory(
+        OrderStatus $status,
+        ?User $changedBy = null,
+        ?string $note = null,
+    ): OrderStatusHistory {
+        return $this->statusHistories()->create([
+            'status' => $status,
+            'changed_by' => $changedBy?->getKey(),
+            'occurred_at' => now(),
+            'note' => $note,
+        ]);
+    }
+
+    public function transitionTo(OrderStatus $status, ?User $changedBy = null): void
+    {
+        DB::transaction(function () use ($status, $changedBy): void {
             $order = self::query()
                 ->whereKey($this->getKey())
                 ->lockForUpdate()
@@ -96,6 +184,7 @@ class Order extends Model
             }
 
             $order->update(['status' => $status]);
+            $order->recordStatusHistory($status, $changedBy);
         });
     }
 }

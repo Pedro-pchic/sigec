@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\RecordEcommerceEvent;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,11 +50,13 @@ class CatalogController extends Controller
         return view('catalog.index', compact('categories', 'categoryId', 'products', 'search'));
     }
 
-    public function show(Product $product): View
+    public function show(Request $request, Product $product, RecordEcommerceEvent $recordEcommerceEvent): View
     {
         $product->load(['category', 'inventory']);
 
         abort_unless($product->is_active && $product->category->is_active, 404);
+
+        $recordEcommerceEvent->recordProductViewed($request, $product);
 
         return view('catalog.show', compact('product'));
     }

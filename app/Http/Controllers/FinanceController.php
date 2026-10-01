@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\FinancialCategory;
-use App\Models\Expense;
-use App\Models\Income;
-use App\Support\Money;
+use App\Services\ManagementDashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class FinanceController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, ManagementDashboardService $managementDashboard): View
     {
         $filters = $request->validate([
             'from' => ['nullable', 'date_format:Y-m-d'],
@@ -21,12 +19,7 @@ class FinanceController extends Controller
         $from = $filters['from'] ?? today()->startOfMonth()->toDateString();
         $to = $filters['to'] ?? today()->toDateString();
 
-        $incomeTotalCents = Money::toCents((string) Income::query()
-            ->whereBetween('date', [$from, $to])
-            ->sum('amount'));
-        $expenseTotalCents = Money::toCents((string) Expense::query()
-            ->whereBetween('date', [$from, $to])
-            ->sum('amount'));
+        $financialSummary = $managementDashboard->financialSummary($from, $to);
 
         $incomeMovements = DB::table('incomes')
             ->leftJoin('payments', 'payments.id', '=', 'incomes.payment_id')
@@ -76,10 +69,10 @@ class FinanceController extends Controller
             });
 
         return view('finance.index', [
-            'balance' => Money::fromCents($incomeTotalCents - $expenseTotalCents),
-            'expenseTotal' => Money::fromCents($expenseTotalCents),
+            'balance' => $financialSummary['balance'],
+            'expenseTotal' => $financialSummary['expense'],
             'from' => $from,
-            'incomeTotal' => Money::fromCents($incomeTotalCents),
+            'incomeTotal' => $financialSummary['income'],
             'movements' => $movements,
             'to' => $to,
         ]);

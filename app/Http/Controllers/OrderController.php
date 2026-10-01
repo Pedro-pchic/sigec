@@ -62,9 +62,10 @@ class OrderController extends Controller
 
     public function show(Order $order): View
     {
-        $order->load(['address', 'customer', 'quote', 'details.product', 'sale']);
+        $order->load(['address', 'customer', 'quote', 'details.product', 'sale', 'statusHistories.changedBy']);
+        $nextLogisticsStatus = $order->currentStatus()->nextLogisticsStage();
 
-        return view('orders.show', compact('order'));
+        return view('orders.show', compact('nextLogisticsStatus', 'order'));
     }
 
     public function edit(Order $order): View
@@ -101,18 +102,24 @@ class OrderController extends Controller
             ->with('status', 'Pedido pendiente actualizado correctamente.');
     }
 
-    public function confirm(Order $order): RedirectResponse
+    public function confirm(Request $request, Order $order): RedirectResponse
     {
-        $order->transitionTo(OrderStatus::Confirmed);
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+
+        $order->transitionTo(OrderStatus::Confirmed, $user);
 
         return redirect()
             ->route('pedidos.show', $order)
             ->with('status', 'Pedido confirmado. Ya puede registrarse como venta.');
     }
 
-    public function cancel(Order $order): RedirectResponse
+    public function cancel(Request $request, Order $order): RedirectResponse
     {
-        $order->transitionTo(OrderStatus::Cancelled);
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+
+        $order->transitionTo(OrderStatus::Cancelled, $user);
 
         return redirect()
             ->route('pedidos.show', $order)

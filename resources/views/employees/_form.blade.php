@@ -25,7 +25,20 @@
     </div>
 
     <div>
-        <label for="puesto" class="block text-sm font-medium">Puesto</label>
+        <label for="position_id" class="block text-sm font-medium">Puesto organizacional</label>
+        <select id="position_id" name="position_id"
+            class="mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
+            <option value="">Sin puesto asignado</option>
+            @foreach ($positions as $position)
+                <option value="{{ $position->id }}" @selected((string) old('position_id', $employee->position_id ?? '') === (string) $position->id)>
+                    {{ $position->name }} — {{ $position->department->name }}{{ $position->is_active ? '' : ' (Inactivo)' }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label for="puesto" class="block text-sm font-medium">Puesto registrado (descripción anterior)</label>
         <input id="puesto" name="puesto" type="text" value="{{ old('puesto', $employee->puesto ?? '') }}"
             class="mt-2 w-full rounded-lg border border-stone-300 px-3 py-2 focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
     </div>

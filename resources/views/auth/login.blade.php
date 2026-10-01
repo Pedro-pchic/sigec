@@ -3,7 +3,7 @@
 @section('title', 'Iniciar sesión')
 
 @section('content')
-    <div class="rounded-3xl bg-stone-50 p-7 shadow-2xl shadow-black/20 ring-1 ring-white/15 sm:p-9">
+    <div class="rounded-3xl bg-warm-white p-7 shadow-2xl shadow-black/20 ring-1 ring-white/15 sm:p-9">
         <div class="mb-8 text-center">
             <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-brand-700 text-xl font-black text-white shadow-sm">S</span>
             <p class="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-brand-700">SIGEC</p>
@@ -12,7 +12,7 @@
         </div>
 
         @if ($errors->any())
-            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+            <div class="ui-alert-danger mb-6" role="alert">
                 {{ $errors->first() }}
             </div>
         @endif
@@ -37,7 +37,7 @@
                 Recordarme
             </label>
 
-            <button type="submit" class="rounded-lg bg-brand-700 px-4 py-2.5 font-semibold text-white shadow-sm hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+            <button type="submit" class="ui-button ui-button-primary w-full">
                 Ingresar
             </button>
         </form>

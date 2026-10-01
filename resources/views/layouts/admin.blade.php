@@ -6,10 +6,10 @@
     <title>@yield('title', 'Administración') | SIGEC</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen overflow-x-hidden bg-stone-100 text-stone-900 antialiased">
+<body class="min-h-screen overflow-x-hidden bg-cream text-stone-900 antialiased">
     <div data-sidebar-overlay class="pointer-events-none fixed inset-0 z-40 bg-stone-950/55 opacity-0 transition-opacity duration-200 lg:hidden" aria-hidden="true"></div>
 
-    <aside id="admin-sidebar" data-admin-sidebar class="fixed inset-y-0 left-0 z-50 flex w-72 -transtone-x-full flex-col bg-stone-950 text-stone-100 shadow-2xl transition-transform duration-200 ease-out lg:transtone-x-0 lg:shadow-none" aria-label="Navegación principal">
+    <aside id="admin-sidebar" data-admin-sidebar class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-espresso text-stone-100 shadow-2xl transition-transform duration-200 ease-out lg:translate-x-0 lg:shadow-none" aria-label="Navegación principal">
         <div class="flex h-20 shrink-0 items-center justify-between border-b border-white/10 px-5">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-400">
                 <span class="grid size-10 place-items-center rounded-xl bg-brand-700 text-lg font-black text-white shadow-sm ring-1 ring-white/10">S</span>
@@ -27,68 +27,52 @@
 
         <nav class="flex-1 overflow-y-auto px-4 py-5 text-sm" aria-label="Secciones administrativas">
             <div class="flex flex-col gap-1">
-                <a href="{{ route('dashboard') }}" @class([
-                    'flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold transition-colors',
-                    'bg-brand-700 text-white shadow-sm' => request()->routeIs('dashboard'),
-                    'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('dashboard'),
-                ])>
-                    <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
-                    Dashboard
-                </a>
+                <x-admin.nav-link :active="request()->routeIs('dashboard')" href="{{ route('dashboard') }}">Dashboard</x-admin.nav-link>
             </div>
 
-            @canany(['manage-users', 'manage-employees'])
+            @can('view-management-dashboard')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Control de Gesti&#243;n</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('gestion.reportes.*')" href="{{ route('gestion.reportes.index') }}">Reportes</x-admin.nav-link>
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-users')
                 <div class="mt-6">
                     <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Administración</p>
                     <div class="mt-2 flex flex-col gap-1">
-                        @can('manage-users')
-                            <a href="{{ route('usuarios.index') }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs('usuarios.*'),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('usuarios.*'),
-                            ])>Usuarios</a>
-                        @endcan
-                        @can('manage-employees')
-                            <a href="{{ route('empleados.index') }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs('empleados.*'),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('empleados.*'),
-                            ])>Empleados</a>
-                        @endcan
+                        <x-admin.nav-link :active="request()->routeIs('usuarios.*')" href="{{ route('usuarios.index') }}">Usuarios</x-admin.nav-link>
                     </div>
                 </div>
-            @endcanany
+            @endcan
+
+            @can('manage-employees')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Recursos Humanos</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('empleados.*')" href="{{ route('empleados.index') }}">Empleados</x-admin.nav-link>
+                        <x-admin.nav-link :active="request()->routeIs('departamentos.*')" href="{{ route('departamentos.index') }}">Departamentos</x-admin.nav-link>
+                        <x-admin.nav-link :active="request()->routeIs('puestos.*')" href="{{ route('puestos.index') }}">Puestos</x-admin.nav-link>
+                    </div>
+                </div>
+            @endcan
 
             @can('manage-catalog')
                 <div class="mt-6">
                     <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Catálogo</p>
                     <div class="mt-2 flex flex-col gap-1">
-                        <a href="{{ route('categorias.index') }}" @class([
-                            'rounded-lg px-3 py-2 font-medium transition-colors',
-                            'bg-brand-700 text-white' => request()->routeIs('categorias.*'),
-                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('categorias.*'),
-                        ])>Categorías</a>
-                        <a href="{{ route('productos.index') }}" @class([
-                            'rounded-lg px-3 py-2 font-medium transition-colors',
-                            'bg-brand-700 text-white' => request()->routeIs('productos.*'),
-                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('productos.*'),
-                        ])>Productos</a>
+                        <x-admin.nav-link :active="request()->routeIs('categorias.*')" href="{{ route('categorias.index') }}">Categorías</x-admin.nav-link>
+                        <x-admin.nav-link :active="request()->routeIs('productos.*')" href="{{ route('productos.index') }}">Productos</x-admin.nav-link>
                     </div>
                 </div>
 
                 <div class="mt-6">
                     <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Inventario</p>
                     <div class="mt-2 flex flex-col gap-1">
-                        <a href="{{ route('inventario.existencias') }}" @class([
-                            'rounded-lg px-3 py-2 font-medium transition-colors',
-                            'bg-brand-700 text-white' => request()->routeIs('inventario.existencias'),
-                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('inventario.existencias'),
-                        ])>Existencias</a>
-                        <a href="{{ route('inventario.movimientos.index') }}" @class([
-                            'rounded-lg px-3 py-2 font-medium transition-colors',
-                            'bg-brand-700 text-white' => request()->routeIs('inventario.movimientos.*'),
-                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('inventario.movimientos.*'),
-                        ])>Movimientos</a>
+                        <x-admin.nav-link :active="request()->routeIs('inventario.existencias')" href="{{ route('inventario.existencias') }}">Existencias</x-admin.nav-link>
+                        <x-admin.nav-link :active="request()->routeIs('inventario.movimientos.*')" href="{{ route('inventario.movimientos.index') }}">Movimientos</x-admin.nav-link>
                     </div>
                 </div>
             @endcan
@@ -98,17 +82,9 @@
                     <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Compras</p>
                     <div class="mt-2 flex flex-col gap-1">
                         @can('manage-purchases')
-                            <a href="{{ route('proveedores.index') }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs('proveedores.*'),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('proveedores.*'),
-                            ])>Proveedores</a>
+                            <x-admin.nav-link :active="request()->routeIs('proveedores.*')" href="{{ route('proveedores.index') }}">Proveedores</x-admin.nav-link>
                         @endcan
-                        <a href="{{ route('compras.index') }}" @class([
-                            'rounded-lg px-3 py-2 font-medium transition-colors',
-                            'bg-brand-700 text-white' => request()->routeIs('compras.*'),
-                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('compras.*'),
-                        ])>Órdenes</a>
+                        <x-admin.nav-link :active="request()->routeIs('compras.*')" href="{{ route('compras.index') }}">Órdenes</x-admin.nav-link>
                     </div>
                 </div>
             @endcan
@@ -122,13 +98,28 @@
                             ['route' => 'cotizaciones.index', 'active' => 'cotizaciones.*', 'label' => 'Cotizaciones'],
                             ['route' => 'pedidos.index', 'active' => 'pedidos.*', 'label' => 'Pedidos'],
                             ['route' => 'ventas.index', 'active' => 'ventas.*', 'label' => 'Ventas'],
+                            ['route' => 'consultas.index', 'active' => 'consultas.*', 'label' => 'Consultas'],
                         ] as $item)
-                            <a href="{{ route($item['route']) }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs($item['active']),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs($item['active']),
-                            ])>{{ $item['label'] }}</a>
+                            <x-admin.nav-link :active="request()->routeIs($item['active'])" href="{{ route($item['route']) }}">{{ $item['label'] }}</x-admin.nav-link>
                         @endforeach
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-logistics')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Operaciones</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('operaciones.logistica.*')" href="{{ route('operaciones.logistica.index') }}">Logística</x-admin.nav-link>
+                    </div>
+                </div>
+            @endcan
+
+            @can('manage-commercial')
+                <div class="mt-6">
+                    <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Marketing</p>
+                    <div class="mt-2 flex flex-col gap-1">
+                        <x-admin.nav-link :active="request()->routeIs('marketing.analytics.*')" href="{{ route('marketing.analytics.index') }}">Analítica</x-admin.nav-link>
                     </div>
                 </div>
             @endcan
@@ -137,22 +128,10 @@
                 <div class="mt-6">
                     <p class="px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-stone-500">Facturación</p>
                     <div class="mt-2 flex flex-col gap-1">
-                        <a href="{{ route('facturas.index') }}" @class([
-                            'rounded-lg px-3 py-2 font-medium transition-colors',
-                            'bg-brand-700 text-white' => request()->routeIs('facturas.*'),
-                            'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('facturas.*'),
-                        ])>Facturas</a>
+                        <x-admin.nav-link :active="request()->routeIs('facturas.*')" href="{{ route('facturas.index') }}">Facturas</x-admin.nav-link>
                         @can('manage-finances')
-                            <a href="{{ route('pagos.index') }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs('pagos.*'),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('pagos.*'),
-                            ])>Pagos</a>
-                            <a href="{{ route('notas-credito.index') }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs('notas-credito.*'),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs('notas-credito.*'),
-                            ])>Notas de crédito</a>
+                            <x-admin.nav-link :active="request()->routeIs('pagos.*')" href="{{ route('pagos.index') }}">Pagos</x-admin.nav-link>
+                            <x-admin.nav-link :active="request()->routeIs('notas-credito.*')" href="{{ route('notas-credito.index') }}">Notas de crédito</x-admin.nav-link>
                         @endcan
                     </div>
                 </div>
@@ -167,11 +146,7 @@
                             ['route' => 'finanzas.ingresos.index', 'active' => 'finanzas.ingresos.*', 'label' => 'Ingresos'],
                             ['route' => 'finanzas.gastos.index', 'active' => 'finanzas.gastos.*', 'label' => 'Gastos'],
                         ] as $item)
-                            <a href="{{ route($item['route']) }}" @class([
-                                'rounded-lg px-3 py-2 font-medium transition-colors',
-                                'bg-brand-700 text-white' => request()->routeIs($item['active']),
-                                'text-stone-300 hover:bg-white/8 hover:text-white' => ! request()->routeIs($item['active']),
-                            ])>{{ $item['label'] }}</a>
+                            <x-admin.nav-link :active="request()->routeIs($item['active'])" href="{{ route($item['route']) }}">{{ $item['label'] }}</x-admin.nav-link>
                         @endforeach
                     </div>
                 </div>
@@ -208,7 +183,7 @@
                     </span>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="inline-flex items-center rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-semibold text-stone-700 shadow-sm hover:border-brand-300 hover:bg-brand-50 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+                        <button type="submit" class="ui-button ui-button-secondary">
                             <span class="hidden sm:inline">Cerrar sesión</span>
                             <span class="sm:hidden">Salir</span>
                         </button>
@@ -231,13 +206,13 @@
             </div>
 
             @if (session('status'))
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900 shadow-sm" role="status">
+                <div class="ui-alert-success" role="status">
                     {{ session('status') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 shadow-sm" role="alert">
+                <div class="ui-alert-danger" role="alert">
                     <p class="font-semibold">Revisa los datos ingresados.</p>
                     <ul class="mt-2 list-disc space-y-1 pl-5">
                         @foreach ($errors->all() as $error)

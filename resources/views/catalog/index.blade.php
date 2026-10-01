@@ -5,7 +5,7 @@
 @section('subheading', 'Explora nuestros productos y consulta su disponibilidad')
 
 @section('content')
-    <form method="GET" action="{{ route('catalogo.index') }}" class="grid gap-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-stone-200 sm:grid-cols-[1fr_14rem_auto] sm:items-end">
+    <form method="GET" action="{{ route('catalogo.index') }}" class="ui-card grid gap-4 p-5 sm:grid-cols-[1fr_14rem_auto] sm:items-end">
         <div>
             <label for="search" class="block text-sm font-medium">Buscar por nombre o SKU</label>
             <input id="search" name="search" type="search" value="{{ $search }}" maxlength="100" placeholder="Ej. Zapato o CAL-001"
@@ -20,18 +20,18 @@
                 @endforeach
             </select>
         </div>
-        <button type="submit" class="rounded-lg bg-brand-700 px-4 py-2 font-semibold text-white hover:bg-brand-600">Filtrar</button>
+        <button type="submit" class="ui-button ui-button-primary">Filtrar</button>
     </form>
 
     @if ($products->isEmpty())
-        <div class="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-stone-200">
+        <div class="ui-empty-state">
             <p class="font-semibold">No encontramos productos.</p>
             <p class="mt-1 text-sm text-stone-600">Prueba con otra búsqueda o categoría.</p>
         </div>
     @else
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @foreach ($products as $product)
-                <article class="group flex overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200 transition-shadow hover:shadow-md sm:flex-col">
+                <article class="ui-card group flex overflow-hidden transition-shadow hover:shadow-md sm:flex-col">
                     <div class="grid w-28 shrink-0 place-items-center bg-brand-50 text-brand-800 sm:h-36 sm:w-full" aria-hidden="true">
                         <span class="text-3xl font-black tracking-tight">{{ mb_strtoupper(mb_substr($product->name, 0, 2)) }}</span>
                     </div>
@@ -42,12 +42,12 @@
                             <h2 class="mt-1 text-lg font-bold">{{ $product->name }}</h2>
                             <p class="mt-1 text-xs text-stone-500">{{ $product->sku }}</p>
                         </div>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ring-current/10 {{ $product->availabilityLabel() === 'Agotado' ? 'bg-red-100 text-red-700' : ($product->availabilityLabel() === 'Stock bajo' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700') }}">
+                        <span class="ui-badge {{ $product->availabilityLabel() === 'Agotado' ? 'ui-badge-danger' : ($product->availabilityLabel() === 'Stock bajo' ? 'ui-badge-warning' : 'ui-badge-success') }}">
                             {{ $product->availabilityLabel() }}
                         </span>
                     </div>
                     <p class="mt-auto text-xl font-bold tabular-nums">Q {{ number_format((float) $product->price, 2) }}</p>
-                    <a href="{{ route('catalogo.show', $product) }}" class="rounded-lg border border-brand-200 px-4 py-2 text-center text-sm font-semibold text-brand-700 hover:bg-brand-50">Ver producto</a>
+                    <a href="{{ route('catalogo.show', $product) }}" class="ui-button ui-button-secondary w-full">Ver producto</a>
                     </div>
                 </article>
             @endforeach

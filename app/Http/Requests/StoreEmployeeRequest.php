@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,6 +29,11 @@ class StoreEmployeeRequest extends FormRequest
                 'integer',
                 Rule::exists('users', 'id'),
                 Rule::unique('employees', 'user_id'),
+            ],
+            'position_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('positions', 'id')->where(fn (Builder $query): Builder => $query->where('is_active', true)),
             ],
             'nombres' => ['required', 'string', 'max:255'],
             'apellidos' => ['required', 'string', 'max:255'],

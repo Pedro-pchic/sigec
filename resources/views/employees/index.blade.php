@@ -15,7 +15,7 @@
                 <thead class="bg-stone-50 text-left text-xs font-semibold uppercase tracking-wide text-stone-600">
                     <tr>
                         <th class="px-4 py-3">Empleado</th>
-                        <th class="px-4 py-3">Puesto</th>
+                        <th class="px-4 py-3">Puesto / Departamento</th>
                         <th class="px-4 py-3">Usuario</th>
                         <th class="px-4 py-3">Estado</th>
                         <th class="px-4 py-3 text-right">Acciones</th>
@@ -25,7 +25,14 @@
                     @forelse ($employees as $employee)
                         <tr>
                             <td class="px-4 py-3 font-medium">{{ $employee->nombres }} {{ $employee->apellidos }}</td>
-                            <td class="px-4 py-3 text-stone-600">{{ $employee->puesto ?? 'Sin especificar' }}</td>
+                            <td class="px-4 py-3 text-stone-600">
+                                @if ($employee->position)
+                                    <span class="font-medium text-stone-900">{{ $employee->position->name }}</span>
+                                    <span class="block text-xs">{{ $employee->position->department->name }}</span>
+                                @else
+                                    Sin puesto asignado
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-stone-600">{{ $employee->user?->email ?? 'Sin asociar' }}</td>
                             <td class="px-4 py-3">
                                 <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ring-current/10 {{ $employee->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700' }}">

@@ -16,8 +16,16 @@
                 <dd class="mt-1 font-semibold">{{ $employee->is_active ? 'Activo' : 'Inactivo' }}</dd>
             </div>
             <div>
-                <dt class="text-sm font-medium text-stone-500">Puesto</dt>
-                <dd class="mt-1">{{ $employee->puesto ?? 'Sin especificar' }}</dd>
+                <dt class="text-sm font-medium text-stone-500">Puesto organizacional</dt>
+                <dd class="mt-1">{{ $employee->position?->name ?? 'Sin puesto asignado' }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-stone-500">Departamento</dt>
+                <dd class="mt-1">{{ $employee->position?->department?->name ?? 'Sin departamento asignado' }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-stone-500">Descripción anterior del puesto</dt>
+                <dd class="mt-1">{{ $employee->puesto ?? 'Sin descripción' }}</dd>
             </div>
             <div>
                 <dt class="text-sm font-medium text-stone-500">Teléfono</dt>

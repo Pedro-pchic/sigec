@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-start">
-        <form method="POST" action="{{ route('checkout.store') }}" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
+        <form method="POST" action="{{ route('checkout.store') }}" class="ui-card p-6">
             @csrf
 
             <fieldset>
@@ -68,12 +68,12 @@
 
             <div class="mt-6 flex flex-wrap gap-3 border-t border-stone-200 pt-5">
                 <button type="submit" @disabled(! $cart['can_checkout'])
-                    class="rounded-lg bg-brand-700 px-5 py-2.5 font-semibold text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-stone-400">Crear pedido</button>
-                <a href="{{ route('carrito.index') }}" class="rounded-lg border border-stone-300 px-5 py-2.5 font-semibold hover:bg-stone-50">Volver al carrito</a>
+                    class="ui-button ui-button-primary disabled:bg-stone-400">Crear pedido</button>
+                <a href="{{ route('carrito.index') }}" class="ui-button ui-button-secondary">Volver al carrito</a>
             </div>
         </form>
 
-        <aside class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-stone-200">
+        <aside class="ui-card p-5">
             <h2 class="text-lg font-bold">Resumen</h2>
             <ul class="mt-4 flex flex-col gap-4">
                 @foreach ($cart['items'] as $item)

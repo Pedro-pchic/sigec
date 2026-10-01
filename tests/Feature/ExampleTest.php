@@ -2,12 +2,17 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    public function test_root_redirects_to_dashboard(): void
+    use LazilyRefreshDatabase;
+
+    public function test_root_renders_public_portal(): void
     {
-        $this->get('/')->assertRedirect('/dashboard');
+        $this->get('/')
+            ->assertOk()
+            ->assertSeeText('Calzado para avanzar con confianza.');
     }
 }

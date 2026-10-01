@@ -5,11 +5,11 @@
 @section('subheading', $product->sku)
 
 @section('actions')
-    <a href="{{ route('productos.edit', $product) }}" class="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600">Editar producto</a>
+    <a href="{{ route('productos.edit', $product) }}" class="ui-button ui-button-primary">Editar producto</a>
 @endsection
 
 @section('content')
-    <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
+    <div class="ui-card p-6">
         <dl class="grid gap-6 sm:grid-cols-2">
             <div>
                 <dt class="text-sm font-medium text-stone-500">SKU</dt>

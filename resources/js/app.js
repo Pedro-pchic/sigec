@@ -4,21 +4,31 @@ const sidebarOpenButton = document.querySelector('[data-sidebar-open]');
 const sidebarCloseButton = document.querySelector('[data-sidebar-close]');
 
 if (sidebar && sidebarOverlay && sidebarOpenButton && sidebarCloseButton) {
-    const setSidebarOpen = (isOpen) => {
-        sidebar.classList.toggle('-translate-x-full', !isOpen);
-        sidebarOverlay.classList.toggle('pointer-events-none', !isOpen);
-        sidebarOverlay.classList.toggle('opacity-0', !isOpen);
-        sidebarOpenButton.setAttribute('aria-expanded', String(isOpen));
-        document.body.classList.toggle('overflow-hidden', isOpen);
+    const desktopSidebar = window.matchMedia('(min-width: 64rem)');
 
-        if (isOpen) {
+    const setSidebarOpen = (isOpen, restoreFocus = false) => {
+        const isSidebarVisible = desktopSidebar.matches || isOpen;
+        const isDrawerOpen = !desktopSidebar.matches && isOpen;
+
+        sidebar.classList.toggle('-translate-x-full', !isSidebarVisible);
+        sidebar.classList.toggle('translate-x-0', isSidebarVisible);
+        sidebarOverlay.classList.toggle('pointer-events-none', !isDrawerOpen);
+        sidebarOverlay.classList.toggle('opacity-0', !isDrawerOpen);
+        sidebar.setAttribute('aria-hidden', String(!isSidebarVisible));
+        sidebar.toggleAttribute('inert', !isSidebarVisible);
+        sidebarOpenButton.setAttribute('aria-expanded', String(isDrawerOpen));
+        document.body.classList.toggle('overflow-hidden', isDrawerOpen);
+
+        if (isDrawerOpen) {
             sidebarCloseButton.focus();
+        } else if (restoreFocus && !desktopSidebar.matches) {
+            sidebarOpenButton.focus();
         }
     };
 
     sidebarOpenButton.addEventListener('click', () => setSidebarOpen(true));
-    sidebarCloseButton.addEventListener('click', () => setSidebarOpen(false));
-    sidebarOverlay.addEventListener('click', () => setSidebarOpen(false));
+    sidebarCloseButton.addEventListener('click', () => setSidebarOpen(false, true));
+    sidebarOverlay.addEventListener('click', () => setSidebarOpen(false, true));
 
     sidebar.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => setSidebarOpen(false));
@@ -26,16 +36,30 @@ if (sidebar && sidebarOverlay && sidebarOpenButton && sidebarCloseButton) {
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && sidebarOpenButton.getAttribute('aria-expanded') === 'true') {
-            setSidebarOpen(false);
-            sidebarOpenButton.focus();
+            setSidebarOpen(false, true);
+            return;
+        }
+
+        if (event.key !== 'Tab' || sidebarOpenButton.getAttribute('aria-expanded') !== 'true') {
+            return;
+        }
+
+        const focusableElements = [...sidebar.querySelectorAll('a[href], button:not([disabled])')]
+            .filter((element) => element.getClientRects().length > 0);
+        const firstFocusableElement = focusableElements[0];
+        const lastFocusableElement = focusableElements.at(-1);
+
+        if (event.shiftKey && document.activeElement === firstFocusableElement) {
+            event.preventDefault();
+            lastFocusableElement.focus();
+        } else if (!event.shiftKey && document.activeElement === lastFocusableElement) {
+            event.preventDefault();
+            firstFocusableElement.focus();
         }
     });
 
-    window.addEventListener('resize', () => {
-        if (window.matchMedia('(min-width: 64rem)').matches) {
-            setSidebarOpen(false);
-        }
-    });
+    desktopSidebar.addEventListener('change', () => setSidebarOpen(false));
+    setSidebarOpen(false);
 }
 
 document.querySelectorAll('[data-purchase-form]').forEach((form) => {

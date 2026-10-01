@@ -26,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('view-management-dashboard', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::MANAGER],
+            true,
+        ));
+
         Gate::define('manage-users', fn (User $user): bool => $user->role?->name === Role::ADMINISTRATOR
         );
 
@@ -50,6 +56,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-commercial', fn (User $user): bool => in_array(
             $user->role?->name,
             [Role::ADMINISTRATOR, Role::SALES],
+            true,
+        ));
+
+        Gate::define('manage-logistics', fn (User $user): bool => in_array(
+            $user->role?->name,
+            [Role::ADMINISTRATOR, Role::WAREHOUSE],
             true,
         ));
 
@@ -88,5 +100,15 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('checkout', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
+
+        RateLimiter::for('contact', function (Request $request): Limit {
+            $email = $request->input('email');
+            $email = is_string($email) ? Str::lower($email) : '';
+
+            return Limit::perMinute(5)
+                ->by(Str::transliterate($email.'|'.$request->ip()));
+        });
+
+        RateLimiter::for('order-tracking', fn (Request $request): Limit => Limit::perMinute(10)->by($request->ip()));
     }
 }
