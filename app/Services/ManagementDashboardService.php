@@ -218,12 +218,17 @@ class ManagementDashboardService
             OrderStatus::Completed->value,
             OrderStatus::Confirmed->value,
         ];
-        $orderStatuses = Order::query()
+        $ordersWithStatus = Order::query()
             ->leftJoin('sales', 'sales.order_id', '=', 'orders.id')
             ->whereBetween('orders.order_date', [$from, $to])
-            ->selectRaw($orderStatusExpression.' AS current_status', $orderStatusBindings)
-            ->selectRaw('COUNT(orders.id) AS total')
-            ->groupByRaw($orderStatusExpression, $orderStatusBindings)
+            ->select('orders.id as order_id')
+            ->selectRaw($orderStatusExpression.' AS current_status', $orderStatusBindings);
+
+        $orderStatuses = DB::query()
+            ->fromSub($ordersWithStatus, 'orders_with_status')
+            ->select('orders_with_status.current_status')
+            ->selectRaw('COUNT(*) AS total')
+            ->groupBy('orders_with_status.current_status')
             ->get()
             ->mapWithKeys(fn (object $row): array => [$row->current_status => (int) $row->total]);
 

@@ -178,6 +178,53 @@ class ManagementDashboardTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_manager_dashboard_returns_correct_order_status_counts_for_cancelled_completed_and_logistics_orders(): void
+    {
+        $manager = $this->userWithRole(Role::MANAGER);
+
+        $cancelledOrder = Order::factory()->create([
+            'status' => OrderStatus::Cancelled,
+            'order_date' => '2026-06-10',
+        ]);
+        Sale::factory()->create([
+            'order_id' => $cancelledOrder->id,
+            'sale_date' => '2026-06-10',
+            'status' => SaleStatus::Confirmed,
+        ]);
+
+        $cancelledSaleOrder = Order::factory()->create([
+            'status' => OrderStatus::Completed,
+            'logistics_status' => OrderStatus::Delivered,
+            'order_date' => '2026-06-11',
+        ]);
+        Sale::factory()->create([
+            'order_id' => $cancelledSaleOrder->id,
+            'sale_date' => '2026-06-11',
+            'status' => SaleStatus::Cancelled,
+        ]);
+
+        Order::factory()->create([
+            'status' => OrderStatus::Completed,
+            'logistics_status' => OrderStatus::InTransit,
+            'order_date' => '2026-06-12',
+        ]);
+        Order::factory()->create([
+            'status' => OrderStatus::Completed,
+            'logistics_status' => null,
+            'order_date' => '2026-06-13',
+        ]);
+
+        $response = $this->actingAs($manager)
+            ->get(route('dashboard', ['from' => '2026-06-01', 'to' => '2026-06-30']))
+            ->assertOk();
+
+        $orderStatuses = $response->viewData('dashboardMetrics')['order_statuses'];
+
+        $this->assertSame(2, $orderStatuses[OrderStatus::Cancelled->value]);
+        $this->assertSame(1, $orderStatuses[OrderStatus::InTransit->value]);
+        $this->assertSame(1, $orderStatuses[OrderStatus::Confirmed->value]);
+    }
+
     public function test_manager_dashboard_handles_empty_period_and_rejects_an_invalid_range(): void
     {
         $manager = $this->userWithRole(Role::MANAGER);
