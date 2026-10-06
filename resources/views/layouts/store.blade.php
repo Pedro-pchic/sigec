@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     <meta name="description" content="@yield('meta_description', 'SIGEC: calzado, compra en línea y atención cercana en un solo lugar.')">
     <link rel="canonical" href="{{ url()->current() }}">
     <title>@yield('title', 'Inicio') | SIGEC</title>

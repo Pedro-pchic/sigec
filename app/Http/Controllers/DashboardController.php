@@ -12,16 +12,14 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request, ManagementDashboardService $managementDashboard): View
     {
-        $data = [
-            'totalUsers' => User::count(),
-            'activeUsers' => User::where('is_active', true)->count(),
-            'totalEmployees' => Employee::count(),
-            'activeEmployees' => Employee::where('is_active', true)->count(),
-            'isManagementDashboard' => false,
-        ];
-
         if (! $request->user()?->can('view-management-dashboard')) {
-            return view('dashboard', $data);
+            return view('dashboard', [
+                'totalUsers' => User::count(),
+                'activeUsers' => User::where('is_active', true)->count(),
+                'totalEmployees' => Employee::count(),
+                'activeEmployees' => Employee::where('is_active', true)->count(),
+                'isManagementDashboard' => false,
+            ]);
         }
 
         $filters = $request->validate([
@@ -32,7 +30,6 @@ class DashboardController extends Controller
         $to = $filters['to'] ?? today()->toDateString();
 
         return view('dashboard', [
-            ...$data,
             'dashboardMetrics' => $managementDashboard->dashboard($from, $to),
             'from' => $from,
             'to' => $to,
