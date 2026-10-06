@@ -18,7 +18,7 @@ export default defineConfig({
     ],
     server: {
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: ['**/.junie/**', '**/storage/framework/views/**', '**/storage/logs/**'],
         },
     },
 });

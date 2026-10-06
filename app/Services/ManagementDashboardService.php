@@ -29,12 +29,20 @@ class ManagementDashboardService
      */
     public function financialSummary(string $from, string $to): array
     {
-        $incomeCents = Money::toCents((string) (Income::query()
+        $incomeSummary = Income::query()
             ->whereBetween('date', [$from, $to])
-            ->sum('amount') ?? '0'));
-        $expenseCents = Money::toCents((string) (Expense::query()
+            ->selectRaw('COALESCE(SUM(amount), 0) AS total');
+        $expenseSummary = Expense::query()
             ->whereBetween('date', [$from, $to])
-            ->sum('amount') ?? '0'));
+            ->selectRaw('COALESCE(SUM(amount), 0) AS total');
+        $summary = DB::query()
+            ->fromSub($incomeSummary, 'income_summary')
+            ->crossJoinSub($expenseSummary, 'expense_summary')
+            ->selectRaw('income_summary.total AS income_total')
+            ->selectRaw('expense_summary.total AS expense_total')
+            ->first();
+        $incomeCents = Money::toCents((string) $summary->income_total);
+        $expenseCents = Money::toCents((string) $summary->expense_total);
 
         return [
             'income' => Money::fromCents($incomeCents),
@@ -99,21 +107,21 @@ class ManagementDashboardService
                 PurchaseStatus::Pending->value,
                 PurchaseStatus::Received->value,
             ])
+            ->selectRaw('COUNT(CASE WHEN status = ? THEN 1 END) AS draft_count', [PurchaseStatus::Draft->value])
+            ->selectRaw('COUNT(CASE WHEN status = ? THEN 1 END) AS pending_count', [PurchaseStatus::Pending->value])
+            ->selectRaw('COUNT(CASE WHEN status = ? THEN 1 END) AS received_count', [PurchaseStatus::Received->value])
+            ->selectRaw('COUNT(CASE WHEN status = ? THEN 1 END) AS cancelled_count', [PurchaseStatus::Cancelled->value])
             ->first();
-        $statuses = Purchase::query()
-            ->whereBetween('order_date', [$from, $to])
-            ->select('status')
-            ->selectRaw('COUNT(*) AS total')
-            ->groupBy('status')
-            ->get()
-            ->mapWithKeys(fn (Purchase $purchase): array => [
-                $purchase->status->value => (int) $purchase->total,
-            ]);
 
         return [
             'count' => (int) $summary->purchase_count,
             'active_total' => Money::fromCents(Money::toCents((string) $summary->active_total)),
-            'statuses' => $this->statusCounts($statuses, PurchaseStatus::cases()),
+            'statuses' => [
+                PurchaseStatus::Draft->value => (int) $summary->draft_count,
+                PurchaseStatus::Pending->value => (int) $summary->pending_count,
+                PurchaseStatus::Received->value => (int) $summary->received_count,
+                PurchaseStatus::Cancelled->value => (int) $summary->cancelled_count,
+            ],
         ];
     }
 
@@ -243,6 +251,10 @@ class ManagementDashboardService
             ->mapWithKeys(fn (object $row): array => [$row->current_status => (int) $row->total]);
 
         $averageDeliveryHours = $this->averageDeliveryHours(clone $eligibleLogisticsOrders);
+        $humanResourcesSummary = Employee::query()
+            ->selectRaw('COUNT(CASE WHEN is_active THEN 1 END) AS active_employees')
+            ->selectRaw('COUNT(DISTINCT CASE WHEN is_active AND position_id IS NOT NULL THEN position_id END) AS occupied_positions')
+            ->first();
         $activeEmployeesByDepartment = Department::query()
             ->leftJoin('positions', 'positions.department_id', '=', 'departments.id')
             ->leftJoin('employees', function ($join): void {
@@ -278,12 +290,8 @@ class ManagementDashboardService
                 'average_delivery_hours' => $averageDeliveryHours,
             ],
             'human_resources' => [
-                'active_employees' => Employee::query()->where('is_active', true)->count(),
-                'occupied_positions' => Employee::query()
-                    ->where('is_active', true)
-                    ->whereNotNull('position_id')
-                    ->distinct('position_id')
-                    ->count('position_id'),
+                'active_employees' => (int) $humanResourcesSummary->active_employees,
+                'occupied_positions' => (int) $humanResourcesSummary->occupied_positions,
                 'employees_by_department' => $activeEmployeesByDepartment,
             ],
         ];
