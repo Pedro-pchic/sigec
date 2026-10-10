@@ -212,6 +212,12 @@
                 </div>
             @endif
 
+            @if (session('warning'))
+                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950" role="status">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="ui-alert-danger" role="alert">
                     <p class="font-semibold">Revisa los datos ingresados.</p>

@@ -12,7 +12,7 @@ class PortalTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    public function test_landing_renders_active_catalog_content_and_public_navigation(): void
+    public function test_landing_hides_products_while_the_ecommerce_catalog_remains_available(): void
     {
         $category = Category::factory()->create(['name' => 'Calzado urbano']);
         $product = Product::factory()->for($category)->create(['name' => 'Bota Aurora']);
@@ -24,10 +24,13 @@ class PortalTest extends TestCase
             ->assertOk()
             ->assertSeeText('Calzado para avanzar con confianza.')
             ->assertSeeText($category->name)
-            ->assertSeeText($product->name)
+            ->assertDontSeeText($product->name)
             ->assertSee(route('catalogo.index'), false)
             ->assertSee(route('carrito.index'), false)
             ->assertSee(route('contacto.create'), false);
+
+        $this->get(route('catalogo.index'))
+            ->assertSeeText($product->name);
     }
 
     public function test_existing_ecommerce_entry_points_remain_accessible(): void

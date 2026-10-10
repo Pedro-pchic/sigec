@@ -7,9 +7,7 @@
 @section('content')
     <section class="grid overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200 md:grid-cols-[1fr_20rem]">
         <div class="p-6 sm:p-8">
-            <div class="mb-6 grid h-40 place-items-center rounded-2xl bg-brand-50 text-brand-800" aria-hidden="true">
-                <span class="text-5xl font-black tracking-tight">{{ mb_strtoupper(mb_substr($product->name, 0, 2)) }}</span>
-            </div>
+            <x-product-image :product="$product" width="960" loading="eager" class="mb-6 h-64 w-full rounded-2xl sm:h-80" />
             <h2 class="text-lg font-semibold">Descripción</h2>
             <p class="mt-3 whitespace-pre-line text-stone-700">{{ $product->description ?? 'Sin descripción disponible.' }}</p>
         </div>

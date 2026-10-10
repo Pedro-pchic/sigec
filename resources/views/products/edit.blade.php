@@ -5,7 +5,7 @@
 @section('subheading', $product->name)
 
 @section('content')
-    <form method="POST" action="{{ route('productos.update', $product) }}" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
+    <form method="POST" action="{{ route('productos.update', $product) }}" enctype="multipart/form-data" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
         @csrf
         @method('PUT')
         @include('products._form')

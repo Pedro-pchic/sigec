@@ -37,6 +37,36 @@
     </div>
 
     <div class="sm:col-span-2">
+        <label for="image" class="block text-sm font-medium">Fotografía del producto</label>
+        <p class="mt-1 text-sm text-stone-600">JPG, JPEG, PNG o WebP. Máximo 2 MB.</p>
+        <input id="image" name="image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            data-product-image-input
+            class="mt-3 block w-full rounded-lg border border-stone-300 bg-white text-sm file:mr-4 file:border-0 file:bg-stone-100 file:px-4 file:py-2 file:font-semibold file:text-stone-800 hover:file:bg-stone-200">
+        @error('image')
+            <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p>
+        @enderror
+
+        <div class="mt-4 flex flex-wrap items-center gap-4">
+            @if (isset($product))
+                <x-product-image :product="$product" width="240" class="h-28 w-28 shrink-0 rounded-lg" data-product-image-current />
+            @else
+                <div aria-hidden="true" class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-800" data-product-image-current>
+                    <span class="text-3xl font-black tracking-tight">{{ mb_strtoupper(mb_substr(old('name', 'PR'), 0, 2)) }}</span>
+                </div>
+            @endif
+            <img src="" alt="Vista previa de la fotografía seleccionada" width="240" height="180" loading="lazy" decoding="async"
+                class="hidden h-28 w-28 shrink-0 rounded-lg object-cover" data-product-image-preview>
+            @if (isset($product) && $product->image_public_id)
+                <label class="flex items-center gap-2 text-sm font-medium">
+                    <input id="remove_image" name="remove_image" type="checkbox" value="1" @checked((bool) old('remove_image'))
+                        class="rounded border-stone-300 text-brand-600 focus:ring-brand-500">
+                    Eliminar fotografía actual
+                </label>
+            @endif
+        </div>
+    </div>
+
+    <div class="sm:col-span-2">
         <input type="hidden" name="is_active" value="0">
         <label class="flex items-center gap-2 text-sm font-medium">
             <input name="is_active" type="checkbox" value="1" @checked((bool) old('is_active', $product->is_active ?? true))

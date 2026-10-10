@@ -5,7 +5,7 @@
 @section('subheading', 'Registra un producto en el catálogo')
 
 @section('content')
-    <form method="POST" action="{{ route('productos.store') }}" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
+    <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
         @csrf
         @include('products._form')
 

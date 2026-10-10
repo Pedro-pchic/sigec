@@ -14,6 +14,7 @@
             <table class="min-w-full divide-y divide-stone-200 text-sm">
                 <thead class="bg-stone-50 text-left text-xs font-semibold uppercase tracking-wide text-stone-600">
                     <tr>
+                        <th class="px-4 py-3">Fotografía</th>
                         <th class="px-4 py-3">SKU</th>
                         <th class="px-4 py-3">Nombre</th>
                         <th class="px-4 py-3">Categoría</th>
@@ -25,6 +26,9 @@
                 <tbody class="divide-y divide-stone-100">
                     @forelse ($products as $product)
                         <tr>
+                            <td class="px-4 py-3">
+                                <x-product-image :product="$product" width="128" loading="lazy" class="h-12 w-12 rounded-md" />
+                            </td>
                             <td class="px-4 py-3 font-mono text-xs font-semibold">{{ $product->sku }}</td>
                             <td class="px-4 py-3 font-medium">{{ $product->name }}</td>
                             <td class="px-4 py-3 text-stone-600">{{ $product->category->name }}</td>
@@ -50,7 +54,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-10 text-center text-stone-500">No hay productos registrados.</td>
+                            <td colspan="7" class="px-4 py-10 text-center text-stone-500">No hay productos registrados.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -32,9 +32,7 @@
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @foreach ($products as $product)
                 <article class="ui-card group flex overflow-hidden transition-shadow hover:shadow-md sm:flex-col">
-                    <div class="grid w-28 shrink-0 place-items-center bg-brand-50 text-brand-800 sm:h-36 sm:w-full" aria-hidden="true">
-                        <span class="text-3xl font-black tracking-tight">{{ mb_strtoupper(mb_substr($product->name, 0, 2)) }}</span>
-                    </div>
+                    <x-product-image :product="$product" width="480" loading="lazy" class="h-28 w-28 shrink-0 sm:h-36 sm:w-full" />
                     <div class="flex min-w-0 flex-1 flex-col gap-4 p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>

@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreProductRequest extends FormRequest
+class StoreProductRequest extends ProductImageRequest
 {
     public function authorize(): bool
     {
@@ -24,6 +23,7 @@ class StoreProductRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:5000'],
             'price' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
             'is_active' => ['sometimes', 'boolean'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 
@@ -44,6 +44,9 @@ class StoreProductRequest extends FormRequest
             'price.decimal' => 'El precio puede tener como máximo dos decimales.',
             'price.min' => 'El precio no puede ser negativo.',
             'price.max' => 'El precio excede el valor máximo permitido.',
+            'image.image' => 'El archivo debe ser una imagen válida.',
+            'image.mimes' => 'La fotografía debe estar en formato JPG, JPEG, PNG o WebP.',
+            'image.max' => 'La fotografía no puede superar 2 MB.',
         ];
     }
 }

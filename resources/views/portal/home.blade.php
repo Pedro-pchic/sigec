@@ -45,36 +45,6 @@
         @endif
     </section>
 
-    <section class="py-6" aria-labelledby="products-title">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Disponibles ahora</p>
-                <h2 id="products-title" class="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Productos para descubrir</h2>
-            </div>
-            <a href="{{ route('catalogo.index') }}" class="text-sm font-semibold text-brand-700 hover:text-brand-500">Ver todos los productos →</a>
-        </div>
-
-        @if ($products->isEmpty())
-            <div class="ui-empty-state mt-6">Estamos preparando nuevos productos para ti.</div>
-        @else
-            <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($products as $product)
-                    <article class="ui-card flex overflow-hidden sm:flex-col">
-                        <div class="grid w-28 shrink-0 place-items-center bg-brand-50 text-brand-800 sm:h-40 sm:w-full" aria-hidden="true">
-                            <span class="text-3xl font-black tracking-tight">{{ mb_strtoupper(mb_substr($product->name, 0, 2)) }}</span>
-                        </div>
-                        <div class="flex min-w-0 flex-1 flex-col p-5">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">{{ $product->category->name }}</p>
-                            <h3 class="mt-1 text-lg font-bold">{{ $product->name }}</h3>
-                            <p class="mt-4 text-xl font-bold tabular-nums">Q {{ number_format((float) $product->price, 2) }}</p>
-                            <a href="{{ route('catalogo.show', $product) }}" class="ui-button ui-button-secondary mt-4 w-full">Ver producto</a>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        @endif
-    </section>
-
     <section id="promociones" class="scroll-mt-28 rounded-3xl border border-dashed border-brand-300 bg-brand-50 px-6 py-10 sm:px-10" aria-labelledby="promotions-title">
         <div class="max-w-2xl">
             <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Promociones</p>

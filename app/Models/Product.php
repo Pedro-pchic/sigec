@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['category_id', 'sku', 'name', 'description', 'price', 'is_active'])]
+#[Fillable(['category_id', 'sku', 'name', 'description', 'price', 'is_active', 'image_url', 'image_public_id'])]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
@@ -80,5 +80,32 @@ class Product extends Model
         }
 
         return 'Disponible';
+    }
+
+    public function imageDeliveryUrl(int $width = 640): ?string
+    {
+        if (! is_string($this->image_url) || $this->image_url === '') {
+            return null;
+        }
+
+        $host = parse_url($this->image_url, PHP_URL_HOST);
+        $path = parse_url($this->image_url, PHP_URL_PATH);
+
+        if (parse_url($this->image_url, PHP_URL_SCHEME) !== 'https'
+            || ! is_string($host)
+            || ! str_ends_with($host, '.cloudinary.com')
+            || ! is_string($path)
+            || ! str_contains($path, '/image/upload/')) {
+            return null;
+        }
+
+        $width = max(1, min($width, 2000));
+
+        return preg_replace(
+            '~(/image/upload/)~',
+            '$1f_auto,q_auto,w_'.$width.',c_fill/',
+            $this->image_url,
+            1,
+        );
     }
 }

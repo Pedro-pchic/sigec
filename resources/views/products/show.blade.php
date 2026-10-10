@@ -11,6 +11,12 @@
 @section('content')
     <div class="ui-card p-6">
         <dl class="grid gap-6 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+                <dt class="text-sm font-medium text-stone-500">Fotografía</dt>
+                <dd class="mt-2">
+                    <x-product-image :product="$product" width="640" loading="eager" class="h-56 w-full max-w-md rounded-xl" />
+                </dd>
+            </div>
             <div>
                 <dt class="text-sm font-medium text-stone-500">SKU</dt>
                 <dd class="mt-1 font-mono font-semibold">{{ $product->sku }}</dd>

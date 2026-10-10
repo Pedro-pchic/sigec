@@ -308,3 +308,51 @@ document.querySelectorAll('[data-order-form]').forEach((form) => {
     updateNames();
     updateTotals();
 });
+
+document.querySelectorAll('[data-product-image-input]').forEach((input) => {
+    const form = input.closest('form');
+    const preview = form.querySelector('[data-product-image-preview]');
+    const currentImage = form.querySelector('[data-product-image-current]');
+    const removeImage = form.querySelector('#remove_image');
+    let objectUrl = null;
+
+    removeImage?.addEventListener('change', () => {
+        if (!removeImage.checked) {
+            return;
+        }
+
+        input.value = '';
+
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            objectUrl = null;
+        }
+
+        preview.classList.add('hidden');
+        currentImage?.classList.remove('hidden');
+    });
+
+    input.addEventListener('change', () => {
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            objectUrl = null;
+        }
+
+        const image = input.files?.[0];
+
+        if (!image) {
+            preview.classList.add('hidden');
+            currentImage?.classList.remove('hidden');
+            return;
+        }
+
+        objectUrl = URL.createObjectURL(image);
+        preview.src = objectUrl;
+        preview.classList.remove('hidden');
+        currentImage?.classList.add('hidden');
+
+        if (removeImage) {
+            removeImage.checked = false;
+        }
+    });
+});
