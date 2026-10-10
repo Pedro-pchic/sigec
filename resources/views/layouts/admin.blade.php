@@ -160,10 +160,10 @@
     </aside>
 
     <div class="min-h-screen lg:pl-72">
-        <header class="sticky top-0 z-30 border-b border-stone-200/90 bg-white/95 backdrop-blur">
+        <header class="sticky top-0 z-30 border-b border-brand-100 bg-brand-50/95 backdrop-blur">
             <div class="flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                 <div class="flex min-w-0 items-center gap-3">
-                    <button type="button" data-sidebar-open class="grid size-10 shrink-0 place-items-center rounded-lg border border-stone-200 bg-white text-stone-700 shadow-sm hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-brand-600 lg:hidden" aria-controls="admin-sidebar" aria-expanded="false" aria-label="Abrir navegación">
+                    <button type="button" data-sidebar-open class="grid size-10 shrink-0 place-items-center rounded-lg border border-brand-200 bg-white text-stone-700 shadow-sm hover:bg-brand-50 focus-visible:outline-2 focus-visible:outline-brand-600 lg:hidden" aria-controls="admin-sidebar" aria-expanded="false" aria-label="Abrir navegación">
                         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
                         </svg>
@@ -194,7 +194,7 @@
         </header>
 
         <main data-admin-content class="mx-auto flex w-full max-w-[100rem] flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-            <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div class="flex flex-col gap-4 border-b border-brand-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">@yield('heading')</h1>
                     @hasSection('subheading')

@@ -31,9 +31,8 @@ class CatalogController extends Controller
             ->get();
 
         $products = Product::query()
+            ->publiclyVisible()
             ->with(['category', 'inventory'])
-            ->where('is_active', true)
-            ->whereHas('category', fn (Builder $query): Builder => $query->where('is_active', true))
             ->when($categoryId !== null, fn (Builder $query): Builder => $query->where('category_id', $categoryId))
             ->when($search !== '', function (Builder $query) use ($search): void {
                 $term = '%'.$search.'%';

@@ -147,11 +147,16 @@ class DemoProductCatalogSeederTest extends TestCase
         ]);
     }
 
-    public function test_seeded_product_is_visible_in_the_public_catalog_with_its_default_image(): void
+    public function test_seeded_product_is_visible_on_landing_and_in_the_public_catalog_with_its_default_image(): void
     {
         $sportsCategory = Category::factory()->create(['name' => 'Zapatos deportivos']);
 
         $this->seed(DemoProductCatalogSeeder::class);
+
+        $this->get(route('inicio'))
+            ->assertOk()
+            ->assertSeeText('Zapato Escolar Classic')
+            ->assertSee('>ZA</span>', false);
 
         $this->get(route('catalogo.index', ['category_id' => $sportsCategory->id]))
             ->assertOk()
